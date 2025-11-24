@@ -85,9 +85,12 @@ function parseOptionNameFromAlert(alertText) {
  * @param {WebDriver} driver - Selenium WebDriver 객체
  * @param {string} storeId - 스토어 ID
  * @param {string} productId - 상품 ID
+ * @param {string} storeName - 스토어명 (옵션, 크롤링한 정보)
+ * @param {string} productName - 상품명 (옵션, 크롤링한 정보)
+ * @param {number} price - 가격 (옵션, 크롤링한 정보)
  * @returns {Promise<boolean>} - 성공 여부
  */
-async function processOrderModification(driver, storeId = '', productId = '') {
+async function processOrderModification(driver, storeId = '', productId = '', storeName = '', productName = '', price = null) {
     try {
         // 세션 타임스탬프는 scrapeCartItems 시작 시점에 이미 설정되어 있음
         // 여기서는 설정하지 않음 (전체 실행 시점의 타임스탬프를 유지)
@@ -309,7 +312,7 @@ async function processOrderModification(driver, storeId = '', productId = '') {
                                                     // 재고 0을 stock에 저장
                                                     if (storeId && productId && optionName) {
                                                         try {
-                                                            await updateStock(storeId, productId, optionName, 0);
+                                                            await updateStock(storeId, productId, optionName, 0, storeName, productName, price);
                                                             console.log(`품절 옵션 '${optionName}'의 재고를 0으로 저장했습니다.`);
                                                         } catch (e) {
                                                             console.error(`품절 재고 정보 저장 중 오류: ${e.message}`);
@@ -503,7 +506,7 @@ async function processOrderModification(driver, storeId = '', productId = '') {
                                                                                 const optionName = parseOptionNameFromAlert(alertText);
                                                                                 
                                                                                 if (stock !== null && optionName) {
-                                                                                    await updateStock(storeId, productId, optionName, stock);
+                                                                                    await updateStock(storeId, productId, optionName, stock, storeName, productName, price);
                                                                                 }
                                                                             } catch (e) {
                                                                                 console.error(`재고 정보 저장 중 오류: ${e.message}`);
@@ -526,7 +529,7 @@ async function processOrderModification(driver, storeId = '', productId = '') {
                                                                         // 재고 9999로 저장
                                                                         if (storeId && productId && optionName) {
                                                                             try {
-                                                                                await updateStock(storeId, productId, optionName, 9999);
+                                                                                await updateStock(storeId, productId, optionName, 9999, storeName, productName, price);
                                                                                 console.log(`옵션 '${optionName}'의 재고를 9999로 저장했습니다.`);
                                                                             } catch (e) {
                                                                                 console.error(`재고 정보 저장 중 오류: ${e.message}`);
@@ -711,7 +714,7 @@ async function processOrderModification(driver, storeId = '', productId = '') {
                         });
                         
                         // 재고 정보도 저장 (9999로)
-                        await updateStock(storeId, productId, "null", 9999);
+                        await updateStock(storeId, productId, "null", 9999, storeName, productName, price);
                         console.log("옵션이 없는 상품으로 option_name 'null'과 재고 9999를 저장했습니다.");
                     } catch (e) {
                         console.error(`옵션 없는 상품 정보 저장 중 오류: ${e.message}`);

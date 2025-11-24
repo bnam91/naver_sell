@@ -17,7 +17,7 @@ const { getCredentials } = require(authPath);
 
 // 스프레드시트 ID (URL에서 추출)
 const SPREADSHEET_ID = '1rd5hkf7oMm8IVgGbISm6ZjHshZ74VmHor9I0VXVWNiM';
-const SHEET_NAME = 'daily_stock';
+const SHEET_NAME = 'daily_stock_';
 
 // 컬럼 인덱스 (0부터 시작)
 const COL_INDEX = 0;      // A열
@@ -583,22 +583,22 @@ async function upsertToSheet(storeId, storeName, productId, productName, price, 
             // 기존 행 업데이트
             const row = data[rowIndex];
             
-            // 기본 정보 업데이트 (비어있거나 변경된 경우)
-            if (!row[COL_STORE_NAME] && storeName) {
+            // 기본 정보 업데이트 (크롤링한 정보가 있으면 항상 업데이트)
+            if (storeName) {
                 const colLetter = numberToColumnLetter(COL_STORE_NAME);
                 updates.push({
                     range: `${SHEET_NAME}!${colLetter}${rowIndex + 1}`,
                     values: [[String(storeName)]]
                 });
             }
-            if (!row[COL_PRODUCT_NAME] && productName) {
+            if (productName) {
                 const colLetter = numberToColumnLetter(COL_PRODUCT_NAME);
                 updates.push({
                     range: `${SHEET_NAME}!${colLetter}${rowIndex + 1}`,
                     values: [[String(productName)]]
                 });
             }
-            if (!row[COL_PRICE] && price !== null) {
+            if (price !== null) {
                 const colLetter = numberToColumnLetter(COL_PRICE);
                 updates.push({
                     range: `${SHEET_NAME}!${colLetter}${rowIndex + 1}`,

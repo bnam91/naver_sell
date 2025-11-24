@@ -677,9 +677,31 @@ async function scrapeCartItems(driver, options = {}) {
                                     await modifyButton.click();
                                     console.log(`${btnIndex + 1}번째 상품의 '주문수정' 버튼을 클릭했습니다.`);
                                     
+                                    // 현재 처리 중인 상품 정보 찾기
+                                    let currentProductName = '';
+                                    let currentPrice = null;
+                                    if (btnIndex < productsArray.length) {
+                                        currentProductName = productsArray[btnIndex].name || '';
+                                        const priceStr = productsArray[btnIndex].price || '';
+                                        if (priceStr) {
+                                            // "4,500원" 형식에서 숫자만 추출
+                                            const priceMatch = priceStr.match(/[\d,]+/);
+                                            if (priceMatch) {
+                                                currentPrice = parseInt(priceMatch[0].replace(/,/g, ''), 10);
+                                            }
+                                        }
+                                    }
+                                    
                                     // orderModification 모듈을 사용하여 주문수정 프로세스 진행
                                     console.log("\n주문수정 프로세스를 시작합니다...");
-                                    const success = await processOrderModification(driver, entry.id || key, currentProductId);
+                                    const success = await processOrderModification(
+                                        driver, 
+                                        entry.id || key, 
+                                        currentProductId,
+                                        entry.name || '',
+                                        currentProductName,
+                                        currentPrice
+                                    );
                                     if (success) {
                                         console.log(`${btnIndex + 1}번째 상품의 주문수정 프로세스가 완료되었습니다.`);
                                     } else {

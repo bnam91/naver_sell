@@ -99,8 +99,9 @@ async function addOrderModificationInfo(storeId, productId, info) {
  * @param {string} storeName - 스토어명 (옵션, 크롤링한 정보)
  * @param {string} productName - 상품명 (옵션, 크롤링한 정보)
  * @param {number} price - 가격 (옵션, 크롤링한 정보)
+ * @param {number} additionalPrice - 추가 가격 (옵션, 크롤링한 정보)
  */
-async function updateStock(storeId, productId, optionName, stock, storeName = null, productName = null, price = null) {
+async function updateStock(storeId, productId, optionName, stock, storeName = null, productName = null, price = null, additionalPrice = null) {
     try {
         // 타임스탬프 생성 (세션 타임스탬프가 있으면 사용, 없으면 새로 생성, 한국 시간 형식)
         const timestamp = currentSessionTimestamp || toKoreaTime();
@@ -124,6 +125,7 @@ async function updateStock(storeId, productId, optionName, stock, storeName = nu
         const finalStoreName = storeName || previousStockInfo?.storeName || '';
         const finalProductName = productName || previousStockInfo?.productName || '';
         const finalPrice = price !== null ? price : (previousStockInfo?.price !== null ? previousStockInfo.price : null);
+        const finalAdditionalPrice = additionalPrice !== null ? additionalPrice : (previousStockInfo?.additionalPrice !== null ? previousStockInfo.additionalPrice : 0);
         
         // 구글 시트에 저장
         await syncOptionToSheet(
@@ -134,7 +136,7 @@ async function updateStock(storeId, productId, optionName, stock, storeName = nu
             finalPrice,
             {
                 option_name: optionName,
-                additional_price: previousStockInfo?.additionalPrice || 0,
+                additional_price: finalAdditionalPrice,
                 stock: {
                     [timestamp]: `${stock} ${stockChange}`
                 }

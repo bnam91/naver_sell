@@ -281,6 +281,10 @@ async function processOrderModification(driver, storeId = '', productId = '', st
                                             await driver.wait(until.elementIsVisible(selectedOption), 5000);
                                             const optionText = await selectedOption.getText();
                                             console.log(`[디버깅] 선택할 옵션 텍스트: '${optionText}'`);
+                                            
+                                            // 옵션의 additional_price 추출
+                                            const currentAdditionalPrice = parseAdditionalPrice(optionText);
+                                            
                                             await selectedOption.click();
                                             console.log(`'${optionText}' 옵션을 클릭했습니다.`);
                                             
@@ -312,7 +316,7 @@ async function processOrderModification(driver, storeId = '', productId = '', st
                                                     // 재고 0을 stock에 저장
                                                     if (storeId && productId && optionName) {
                                                         try {
-                                                            await updateStock(storeId, productId, optionName, 0, storeName, productName, price);
+                                                            await updateStock(storeId, productId, optionName, 0, storeName, productName, price, currentAdditionalPrice);
                                                             console.log(`품절 옵션 '${optionName}'의 재고를 0으로 저장했습니다.`);
                                                         } catch (e) {
                                                             console.error(`품절 재고 정보 저장 중 오류: ${e.message}`);
@@ -506,7 +510,7 @@ async function processOrderModification(driver, storeId = '', productId = '', st
                                                                                 const optionName = parseOptionNameFromAlert(alertText);
                                                                                 
                                                                                 if (stock !== null && optionName) {
-                                                                                    await updateStock(storeId, productId, optionName, stock, storeName, productName, price);
+                                                                                    await updateStock(storeId, productId, optionName, stock, storeName, productName, price, currentAdditionalPrice);
                                                                                 }
                                                                             } catch (e) {
                                                                                 console.error(`재고 정보 저장 중 오류: ${e.message}`);
@@ -529,7 +533,7 @@ async function processOrderModification(driver, storeId = '', productId = '', st
                                                                         // 재고 9999로 저장
                                                                         if (storeId && productId && optionName) {
                                                                             try {
-                                                                                await updateStock(storeId, productId, optionName, 9999, storeName, productName, price);
+                                                                                await updateStock(storeId, productId, optionName, 9999, storeName, productName, price, currentAdditionalPrice);
                                                                                 console.log(`옵션 '${optionName}'의 재고를 9999로 저장했습니다.`);
                                                                             } catch (e) {
                                                                                 console.error(`재고 정보 저장 중 오류: ${e.message}`);
@@ -714,7 +718,7 @@ async function processOrderModification(driver, storeId = '', productId = '', st
                         });
                         
                         // 재고 정보도 저장 (9999로)
-                        await updateStock(storeId, productId, "null", 9999, storeName, productName, price);
+                        await updateStock(storeId, productId, "null", 9999, storeName, productName, price, 0);
                         console.log("옵션이 없는 상품으로 option_name 'null'과 재고 9999를 저장했습니다.");
                     } catch (e) {
                         console.error(`옵션 없는 상품 정보 저장 중 오류: ${e.message}`);

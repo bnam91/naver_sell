@@ -1,0 +1,22 @@
+{
+  "name": "naver-login-automation",
+  "version": "1.0.0",
+  "description": "네이버 로그인 자동화 스크립트",
+  "main": "01_user_login_naver.js",
+  "scripts": {
+    "start": "node 01_user_login_naver.js"
+  },
+  "keywords": [
+    "selenium",
+    "automation",
+    "naver"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "googleapis": "^166.0.0",
+    "open": "^11.0.0",
+    "selenium-webdriver": "^4.15.0"
+  }
+}

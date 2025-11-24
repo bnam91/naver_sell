@@ -1,0 +1,119 @@
+{
+  "stores": [
+    {
+      "store_id": "500026260",
+      "store_name": "무배샵",
+      "products": [
+        {
+          "product_id": "6078870290",
+          "product_name": "오페라글라스 니쿠라 콘서트 망원경 뮤지컬 쌍안경 10배율x22mm 화이트",
+          "price": 10970,
+          "options": [
+            {
+              "option_id": "",
+              "option_name": "화이트",
+              "additional_price": 0,
+              "memo": "",
+              "stock": {
+                "2025-11-23T17:06:03.878Z": "3715 (-)"
+              }
+            },
+            {
+              "option_id": "",
+              "option_name": "블랙",
+              "additional_price": 0,
+              "memo": "",
+              "stock": {
+                "2025-11-23T17:06:03.878Z": "6045 (-)"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "store_id": "100298117",
+      "store_name": "소유 라이프",
+      "products": [
+        {
+          "product_id": "6131183825",
+          "product_name": "소유라이프 오페라 글라스 콘서트 뮤지컬 망원경 어린이 오글 안경",
+          "price": 29300,
+          "options": [
+            {
+              "option_id": "",
+              "option_name": "오페라글라스 블랙",
+              "additional_price": 0,
+              "memo": "",
+              "stock": {
+                "2025-11-23T17:06:03.878Z": "125 (-)"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "store_id": "100538770",
+      "store_name": "다온솔",
+      "products": [
+        {
+          "product_id": "7270919037",
+          "product_name": "다온솔 오페라글라스 콘서트 안경 오글 쌍안경 뮤지컬 오페라글래스 망원경 떠블경",
+          "price": 39800,
+          "options": [
+            {
+              "option_id": "",
+              "option_name": "다온솔 떠블경 (스트랩 2종 무료)",
+              "additional_price": 0,
+              "memo": "",
+              "stock": {
+                "2025-11-23T17:06:03.878Z": "275 (-)"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "store_id": "101520555",
+      "store_name": "라라스토어 공식몰",
+      "products": [
+        {
+          "product_id": "7484467111",
+          "product_name": "자동초점 오페라글라스 콘서트망원경 뮤지컬 망원경 쌍안경 니쿠라 럭슨",
+          "price": 36800,
+          "options": [
+            {
+              "option_id": "",
+              "option_name": "미드그레이 (Mid-Grey)",
+              "additional_price": 0,
+              "memo": "",
+              "stock": {
+                "2025-11-23T17:06:03.878Z": "335 (-)"
+              }
+            },
+            {
+              "option_id": "",
+              "option_name": "매트블랙 (Matt-Black)",
+              "additional_price": 1800,
+              "memo": "",
+              "stock": {
+                "2025-11-23T17:06:03.878Z": "355 (-)"
+              }
+            },
+            {
+              "option_id": "",
+              "option_name": "🙋‍♂️럭슨 수동초점(신상/블랙)",
+              "additional_price": -5220,
+              "memo": "",
+              "stock": {
+                "2025-11-23T17:06:03.878Z": "495 (-)"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

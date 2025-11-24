@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Python
+__pycache__/
+
+# User data - 폴더는 유지하되 내용만 제외
+user_data/*
+user_data/**/*
+
+# Logs
+*.log
+logs/
+npm-debug.log*

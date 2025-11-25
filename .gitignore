@@ -21,4 +21,5 @@ user_data/**/*
 # Logs
 *.log
 logs/
+log/
 npm-debug.log*

@@ -82,12 +82,37 @@ async function clearChromeData(userDataDir, keepLogin = true) {
         try {
             const stats = await fs.stat(dirPath);
             if (stats.isDirectory()) {
-                await fs.rm(dirPath, { recursive: true, force: true });
-                console.log(`${dirName} 디렉토리를 삭제했습니다.`);
+                // EBUSY 에러 발생 시 재시도 (최대 3회)
+                let retries = 3;
+                let lastError = null;
+                while (retries > 0) {
+                    try {
+                        await fs.rm(dirPath, { recursive: true, force: true });
+                        console.log(`${dirName} 디렉토리를 삭제했습니다.`);
+                        break;
+                    } catch (e) {
+                        lastError = e;
+                        if (e.code === 'EBUSY' && retries > 1) {
+                            // 파일이 잠겨있으면 잠시 대기 후 재시도
+                            await new Promise(resolve => setTimeout(resolve, 500));
+                            retries--;
+                        } else {
+                            throw e;
+                        }
+                    }
+                }
+                if (lastError && retries === 0) {
+                    console.log(`${dirName} 디렉토리 삭제 중 오류 (재시도 실패): ${lastError.message}`);
+                }
             }
         } catch (e) {
             if (e.code !== 'ENOENT') {
-                console.log(`${dirName} 디렉토리 삭제 중 오류: ${e.message}`);
+                // EBUSY 에러는 경고만 출력하고 계속 진행
+                if (e.code === 'EBUSY') {
+                    console.log(`${dirName} 디렉토리가 사용 중입니다. 다음 실행 시 자동으로 정리됩니다.`);
+                } else {
+                    console.log(`${dirName} 디렉토리 삭제 중 오류: ${e.message}`);
+                }
             }
         }
     }
@@ -845,9 +870,12 @@ async function main() {
         // 캐시와 임시 파일 정리 (로그인 정보 유지)
         await clearChromeData(userDataDir);
 
+        // Chrome 드라이버 변수를 상위 스코프에 선언 (finally에서 접근하기 위해)
+        let driver = null;
+
         // Chrome 드라이버 생성 및 네이버 열기
         try {
-            const driver = await new Builder()
+            driver = await new Builder()
                 .forBrowser('chrome')
                 .setChromeOptions(options)
                 .build();
@@ -907,10 +935,7 @@ async function main() {
             console.log("\n모든 스토어의 주문수정 프로세스가 완료되었습니다.");
             
             console.log(`\n선택된 프로필: ${selectedProfile}`);
-            console.log("네이버와 장바구니 페이지가 열렸습니다. 프로그램을 종료합니다.");
-            
-            // detach 옵션이 있으므로 드라이버를 종료하지 않음
-            // await driver.quit();
+            console.log("프로그램을 종료합니다.");
             
         } catch (e) {
             console.log(`Chrome 드라이버 생성 중 오류 발생: ${e.message}`);
@@ -919,6 +944,18 @@ async function main() {
             console.log("2. 프로필 디렉토리가 손상되었을 수 있습니다. 새 프로필을 생성해보세요.");
             console.log("3. ChromeDriver 버전이 Chrome 브라우저 버전과 호환되는지 확인하세요.");
             console.log("프로그램을 종료합니다.");
+        } finally {
+            // 드라이버가 생성되었으면 반드시 종료
+            if (driver) {
+                try {
+                    console.log("Chrome 브라우저를 종료합니다...");
+                    await driver.quit();
+                    console.log("Chrome 브라우저가 종료되었습니다.");
+                } catch (e) {
+                    console.error(`Chrome 브라우저 종료 중 오류: ${e.message}`);
+                    // 종료 실패해도 계속 진행
+                }
+            }
         }
     } catch (e) {
         console.error(`오류 발생: ${e.message}`);

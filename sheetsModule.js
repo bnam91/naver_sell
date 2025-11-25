@@ -34,6 +34,61 @@ let sheets = null;
 let authClient = null;
 let sheetIdCache = null;
 
+// 재시도 설정
+const MAX_RETRIES = 10; // 최대 재시도 횟수
+const INITIAL_RETRY_DELAY = 1000; // 초기 재시도 대기 시간 (밀리초)
+const MAX_RETRY_DELAY = 60000; // 최대 재시도 대기 시간 (60초)
+
+/**
+ * 할당량 초과 에러인지 확인
+ */
+function isQuotaExceededError(error) {
+    const errorMessage = error?.message || '';
+    return errorMessage.includes('Quota exceeded') || 
+           errorMessage.includes('quota metric') ||
+           error?.code === 429; // HTTP 429 Too Many Requests
+}
+
+/**
+ * 지수 백오프를 사용한 재시도 로직
+ * @param {Function} apiCall - 실행할 API 호출 함수
+ * @param {string} operationName - 작업 이름 (로깅용)
+ * @returns {Promise} - API 호출 결과
+ */
+async function retryWithBackoff(apiCall, operationName = 'API 호출') {
+    let lastError = null;
+    
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        try {
+            return await apiCall();
+        } catch (error) {
+            lastError = error;
+            
+            // 할당량 초과 에러가 아니면 즉시 에러 반환
+            if (!isQuotaExceededError(error)) {
+                throw error;
+            }
+            
+            // 마지막 시도면 에러 반환
+            if (attempt === MAX_RETRIES) {
+                console.error(`${operationName} 재시도 실패 (${MAX_RETRIES + 1}회 시도): ${error.message}`);
+                throw error;
+            }
+            
+            // 지수 백오프 계산 (최대 대기 시간 제한)
+            const delay = Math.min(
+                INITIAL_RETRY_DELAY * Math.pow(2, attempt),
+                MAX_RETRY_DELAY
+            );
+            
+            console.log(`${operationName} 할당량 초과 에러 발생. ${delay / 1000}초 후 재시도... (${attempt + 1}/${MAX_RETRIES})`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+    }
+    
+    throw lastError;
+}
+
 /**
  * Google Sheets API 클라이언트 초기화
  */
@@ -61,9 +116,11 @@ async function getSheetId(sheetsClient) {
     }
     
     try {
-        const response = await sheetsClient.spreadsheets.get({
-            spreadsheetId: SPREADSHEET_ID
-        });
+        const response = await retryWithBackoff(async () => {
+            return await sheetsClient.spreadsheets.get({
+                spreadsheetId: SPREADSHEET_ID
+            });
+        }, '시트 ID 가져오기');
         
         const sheet = response.data.sheets.find(s => s.properties.title === SHEET_NAME);
         if (sheet) {
@@ -84,10 +141,12 @@ async function getSheetId(sheetsClient) {
 async function readSheetData() {
     try {
         const sheetsClient = await initSheets();
-        const response = await sheetsClient.spreadsheets.values.get({
-            spreadsheetId: SPREADSHEET_ID,
-            range: `${SHEET_NAME}!A:ZZ`,
-        });
+        const response = await retryWithBackoff(async () => {
+            return await sheetsClient.spreadsheets.values.get({
+                spreadsheetId: SPREADSHEET_ID,
+                range: `${SHEET_NAME}!A:ZZ`,
+            });
+        }, '시트 데이터 읽기');
         
         return response.data.values || [];
     } catch (e) {
@@ -102,11 +161,13 @@ async function readSheetData() {
 async function ensureSheetColumns(sheetsClient, requiredColumnCount) {
     try {
         const sheetId = await getSheetId(sheetsClient);
-        const response = await sheetsClient.spreadsheets.get({
-            spreadsheetId: SPREADSHEET_ID,
-            ranges: [`${SHEET_NAME}!A1`],
-            includeGridData: false
-        });
+        const response = await retryWithBackoff(async () => {
+            return await sheetsClient.spreadsheets.get({
+                spreadsheetId: SPREADSHEET_ID,
+                ranges: [`${SHEET_NAME}!A1`],
+                includeGridData: false
+            });
+        }, '시트 컬럼 확인');
         
         const sheet = response.data.sheets.find(s => s.properties.sheetId === sheetId);
         if (!sheet) {
@@ -123,22 +184,24 @@ async function ensureSheetColumns(sheetsClient, requiredColumnCount) {
             // 여유 있게 확장 (최소 10개, 최대 50개씩 확장)
             const newColumnCount = Math.max(requiredColumnCount + 10, currentColumnCount + 50);
             
-            await sheetsClient.spreadsheets.batchUpdate({
-                spreadsheetId: SPREADSHEET_ID,
-                resource: {
-                    requests: [{
-                        updateSheetProperties: {
-                            properties: {
-                                sheetId: sheetId,
-                                gridProperties: {
-                                    columnCount: newColumnCount
-                                }
-                            },
-                            fields: 'gridProperties.columnCount'
-                        }
-                    }]
-                }
-            });
+            await retryWithBackoff(async () => {
+                return await sheetsClient.spreadsheets.batchUpdate({
+                    spreadsheetId: SPREADSHEET_ID,
+                    resource: {
+                        requests: [{
+                            updateSheetProperties: {
+                                properties: {
+                                    sheetId: sheetId,
+                                    gridProperties: {
+                                        columnCount: newColumnCount
+                                    }
+                                },
+                                fields: 'gridProperties.columnCount'
+                            }
+                        }]
+                    }
+                });
+            }, '시트 컬럼 확장');
             console.log(`시트 컬럼 수를 ${currentColumnCount}개에서 ${newColumnCount}개로 확장했습니다. (필요한 컬럼: ${requiredColumnCount}개)`);
         }
     } catch (e) {
@@ -162,14 +225,16 @@ async function ensureHeaders() {
                 'product_name', 'price', 'option_name', 'additional_price', '', '', ''
             ];
             
-            await sheetsClient.spreadsheets.values.update({
-                spreadsheetId: SPREADSHEET_ID,
-                range: `${SHEET_NAME}!A1:L1`,
-                valueInputOption: 'RAW',
-                resource: {
-                    values: [headers]
-                }
-            });
+            await retryWithBackoff(async () => {
+                return await sheetsClient.spreadsheets.values.update({
+                    spreadsheetId: SPREADSHEET_ID,
+                    range: `${SHEET_NAME}!A1:L1`,
+                    valueInputOption: 'RAW',
+                    resource: {
+                        values: [headers]
+                    }
+                });
+            }, '헤더 추가');
         }
     } catch (e) {
         console.error(`헤더 확인 중 오류: ${e.message}`);
@@ -328,11 +393,13 @@ async function ensureColumnsBeforeUpdate(sheetsClient, stockData) {
         
         // 먼저 현재 시트 상태 확인 (데이터 읽기 전)
         const sheetId = await getSheetId(sheetsClient);
-        const response = await sheetsClient.spreadsheets.get({
-            spreadsheetId: SPREADSHEET_ID,
-            ranges: [`${SHEET_NAME}!A1:ZZ1`], // 헤더만 읽기
-            includeGridData: false
-        });
+        const response = await retryWithBackoff(async () => {
+            return await sheetsClient.spreadsheets.get({
+                spreadsheetId: SPREADSHEET_ID,
+                ranges: [`${SHEET_NAME}!A1:ZZ1`], // 헤더만 읽기
+                includeGridData: false
+            });
+        }, '열 확장 확인');
         
         const sheet = response.data.sheets.find(s => s.properties.sheetId === sheetId);
         if (!sheet) {
@@ -388,22 +455,24 @@ async function ensureColumnsBeforeUpdate(sheetsClient, stockData) {
         if (requiredColumnCount > currentColumnCount) {
             const newColumnCount = Math.max(requiredColumnCount + 10, currentColumnCount + 50);
             
-            await sheetsClient.spreadsheets.batchUpdate({
-                spreadsheetId: SPREADSHEET_ID,
-                resource: {
-                    requests: [{
-                        updateSheetProperties: {
-                            properties: {
-                                sheetId: sheetId,
-                                gridProperties: {
-                                    columnCount: newColumnCount
-                                }
-                            },
-                            fields: 'gridProperties.columnCount'
-                        }
-                    }]
-                }
-            });
+            await retryWithBackoff(async () => {
+                return await sheetsClient.spreadsheets.batchUpdate({
+                    spreadsheetId: SPREADSHEET_ID,
+                    resource: {
+                        requests: [{
+                            updateSheetProperties: {
+                                properties: {
+                                    sheetId: sheetId,
+                                    gridProperties: {
+                                        columnCount: newColumnCount
+                                    }
+                                },
+                                fields: 'gridProperties.columnCount'
+                            }
+                        }]
+                    }
+                });
+            }, '열 확장');
             console.log(`[열 확장] 시트 컬럼 수를 ${currentColumnCount}개에서 ${newColumnCount}개로 확장했습니다. (필요한 컬럼: ${requiredColumnCount}개)`);
         }
         
@@ -532,15 +601,17 @@ async function upsertToSheet(storeId, storeName, productId, productName, price, 
             newRow[stockCol] = String(latestValue);
             
             // 새 행 추가
-            await sheetsClient.spreadsheets.values.append({
-                spreadsheetId: SPREADSHEET_ID,
-                range: `${SHEET_NAME}!A:ZZ`,
-                valueInputOption: 'RAW',
-                insertDataOption: 'INSERT_ROWS',
-                resource: {
-                    values: [newRow]
-                }
-            });
+            await retryWithBackoff(async () => {
+                return await sheetsClient.spreadsheets.values.append({
+                    spreadsheetId: SPREADSHEET_ID,
+                    range: `${SHEET_NAME}!A:ZZ`,
+                    valueInputOption: 'RAW',
+                    insertDataOption: 'INSERT_ROWS',
+                    resource: {
+                        values: [newRow]
+                    }
+                });
+            }, '행 추가');
             
             // 추가된 행의 인덱스 (헤더 제외, 0부터 시작하므로 data.length - 1)
             const appendedRowIndex = data.length - 1;
@@ -572,12 +643,14 @@ async function upsertToSheet(storeId, storeName, productId, productName, price, 
             }
             
             if (formatRequests.length > 0) {
-                await sheetsClient.spreadsheets.batchUpdate({
-                    spreadsheetId: SPREADSHEET_ID,
-                    resource: {
-                        requests: formatRequests
-                    }
-                });
+                await retryWithBackoff(async () => {
+                    return await sheetsClient.spreadsheets.batchUpdate({
+                        spreadsheetId: SPREADSHEET_ID,
+                        resource: {
+                            requests: formatRequests
+                        }
+                    });
+                }, '색상 서식 적용');
             }
         } else {
             // 기존 행 업데이트
@@ -624,13 +697,15 @@ async function upsertToSheet(storeId, storeName, productId, productName, price, 
         
         // 배치 업데이트 (값 업데이트)
         if (updates.length > 0) {
-            await sheetsClient.spreadsheets.values.batchUpdate({
-                spreadsheetId: SPREADSHEET_ID,
-                resource: {
-                    valueInputOption: 'RAW',
-                    data: updates
-                }
-            });
+            await retryWithBackoff(async () => {
+                return await sheetsClient.spreadsheets.values.batchUpdate({
+                    spreadsheetId: SPREADSHEET_ID,
+                    resource: {
+                        valueInputOption: 'RAW',
+                        data: updates
+                    }
+                });
+            }, '값 업데이트');
         }
         
         // stock 값에 대한 색상 서식 적용 (기존 행 업데이트인 경우, 가장 최근 값만)
@@ -662,12 +737,14 @@ async function upsertToSheet(storeId, storeName, productId, productName, price, 
                 }
                 
                 if (formatRequests.length > 0) {
-                    await sheetsClient.spreadsheets.batchUpdate({
-                        spreadsheetId: SPREADSHEET_ID,
-                        resource: {
-                            requests: formatRequests
-                        }
-                    });
+                    await retryWithBackoff(async () => {
+                        return await sheetsClient.spreadsheets.batchUpdate({
+                            spreadsheetId: SPREADSHEET_ID,
+                            resource: {
+                                requests: formatRequests
+                            }
+                        });
+                    }, '색상 서식 적용');
                 }
             }
     } catch (e) {
@@ -716,13 +793,15 @@ async function upsertStoreToSheet(storeId, storeName) {
             }
             
             if (updates.length > 0) {
-                await sheetsClient.spreadsheets.values.batchUpdate({
-                    spreadsheetId: SPREADSHEET_ID,
-                    resource: {
-                        valueInputOption: 'RAW',
-                        data: updates
-                    }
-                });
+                await retryWithBackoff(async () => {
+                    return await sheetsClient.spreadsheets.values.batchUpdate({
+                        spreadsheetId: SPREADSHEET_ID,
+                        resource: {
+                            valueInputOption: 'RAW',
+                            data: updates
+                        }
+                    });
+                }, '스토어 정보 업데이트');
             }
         }
     } catch (e) {
@@ -766,13 +845,15 @@ async function upsertProductToSheet(storeId, productId, productName, price) {
         }
         
         if (updates.length > 0) {
-            await sheetsClient.spreadsheets.values.batchUpdate({
-                spreadsheetId: SPREADSHEET_ID,
-                resource: {
-                    valueInputOption: 'RAW',
-                    data: updates
-                }
-            });
+            await retryWithBackoff(async () => {
+                return await sheetsClient.spreadsheets.values.batchUpdate({
+                    spreadsheetId: SPREADSHEET_ID,
+                    resource: {
+                        valueInputOption: 'RAW',
+                        data: updates
+                    }
+                });
+            }, '상품 정보 업데이트');
         }
     } catch (e) {
         console.error(`상품 저장 중 오류: ${e.message}`);

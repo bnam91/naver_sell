@@ -5,6 +5,13 @@
 ② 스프레드시트
 - https://docs.google.com/spreadsheets/d/1rd5hkf7oMm8IVgGbISm6ZjHshZ74VmHor9I0VXVWNiM/edit?gid=175205913#gid=175205913
 
+③ 명령어 
+    윈도우(배치) 
+    - C:\Users\darli\Desktop\github\naver_sell\run_all_naver_sell.bat
+
+    맥OS
+    - 
+
 
 ======== ======== ======== ======== ======== ======== ======== ======== ======== ======== ======== ========
 
@@ -31,6 +38,14 @@
     - 집에 서버pc 필요
     - run_all.sh (병렬 실행 스크립트) : https://chatgpt.com/c/69245d44-fff4-8323-8502-c1f40c65fad8
 
+        
+    👉 필요하면 추가로 만들어줄 수 있음
+
+    - 윈도우 스케줄러 자동 등록(.xml) 파일 생성
+    - 특정 시간마다 자동 실행(매시간, 매일, 10분 간격 등)
+    - 실행 시 자동으로 cmd 창 숨김 버전 (vbs wrapper)
+    - 로그 자동 압축/삭제 관리 스크립트
+
 
 ======== ======== ======== ======== ======== ======== ======== ======== ======== ======== ======== ========
 
@@ -49,3 +64,6 @@ cd "/Users/a1/Documents/github/naver_sell" && node /Users/a1/Documents/github/na
 cd "/Users/a1/Documents/github/naver_sell" && node /Users/a1/Documents/github/naver_sell/NaverSell_v5_헤드리스.js --profile=naver_goodboyhand --headless
 
 cd "/Users/a1/Documents/github/naver_sell" && node /Users/a1/Documents/github/naver_sell/NaverSell_v5_헤드리스.js --profile=naver_skround12 --headless
+
+
+

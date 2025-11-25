@@ -97,7 +97,7 @@ async function processOrderModification(driver, storeId = '', productId = '', st
         
         // 1. 레이어 창이 나타날 때까지 대기
         console.log("주문수정 레이어 창이 나타날 때까지 대기 중...");
-        await driver.sleep(2000);
+        await driver.sleep(2200);
         
         // 3. '옵션 추가' 드롭다운 찾기 및 클릭
         try {
@@ -421,7 +421,7 @@ async function processOrderModification(driver, storeId = '', productId = '', st
                                                             console.log(`  -> 주문수량을 ${inputValue}개로 변경했습니다.`);
                                                             
                                                             // 5-4. 확인 버튼 클릭
-                                                            await driver.sleep(1200);
+                                                            await driver.sleep(1500);
                                                             try {
                                                                 // 확인 버튼 찾기
                                                                 let confirmButton = null;
@@ -604,7 +604,7 @@ async function processOrderModification(driver, storeId = '', productId = '', st
                                                                                 console.log("주문수정 버튼을 다시 클릭했습니다.");
                                                                                 
                                                                                 // 레이어 창이 나타날 때까지 대기
-                                                                                await driver.sleep(1800);
+                                                                                await driver.sleep(2000);
                                                                                 
                                                                                 // 드롭다운 다시 찾기 및 클릭
                                                                                 let optionDropdown = null;
@@ -733,7 +733,7 @@ async function processOrderModification(driver, storeId = '', productId = '', st
 
         // 6. 주문수정 레이어 X 버튼으로 닫기
         try {
-            await driver.sleep(1200);
+            await driver.sleep(1500);
             let closeButton = null;
 
             // 클래스명으로 닫기 버튼 찾기

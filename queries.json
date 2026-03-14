@@ -1,0 +1,381 @@
+{
+  "getCartProductModifyView": {
+    "query": "query getCartProductModifyView($cartProductId: String!, $deviceType: DeviceType!) {\n  getCartProductModifyView: getCartProductModifyViewShopperGW(\n    cartProductId: $cartProductId\n    deviceType: $deviceType\n  ) {\n    authenticationType\n    blackConsumer\n    memberId\n    cartProductId\n    channel {\n      channelName\n      channelNo\n      channelUid\n      channelSiteFullUrl\n      naSiteId\n      naverPaySellerNo\n      sellerExternalStatusType\n      __typename\n    }\n    channelServiceType\n    deliveryFee {\n      deliveryFee {\n        ...deliveryFeeField\n        __typename\n      }\n      deliveryFeePolicy {\n        ...deliveryFeePolicyField\n        __typename\n      }\n      __typename\n    }\n    bundleDeliveryFee {\n      ...bundleProductDeliveryFeeField\n      __typename\n    }\n    deliveryFeePayType\n    deliveryMethodType\n    discount {\n      ...cartProductDiscountField\n      __typename\n    }\n    hopeDelivery {\n      additionalFee\n      hopeDeliveryDate\n      hopeDeliveryTime\n      region\n      __typename\n    }\n    items {\n      ...cartViewProductItemField\n      __typename\n    }\n    merchant {\n      customerCenterTelNo\n      merchantName\n      merchantNo\n      merchantStatus\n      merchantUrl\n      __typename\n    }\n    name\n    optionUsable\n    overseaDelivery\n    preOrder {\n      deliveryEndDateTime\n      deliveryStartDateTime\n      minOrderQuantity\n      __typename\n    }\n    productCombinationOptions {\n      id\n      productId\n      groupNames\n      names\n      stockQuantity\n      salePrice\n      price\n      optionAdditionalFee\n      sellerManagerCode\n      todayDispatch\n      status\n      __typename\n    }\n    productId\n    productNo\n    productDelivery {\n      deliveryFeeType\n      deliveryFeePayType\n      deliveryMethodTypes\n      baseFee\n      freeConditionalAmount\n      repeatQuantity\n      secondBaseQuantity\n      secondExtraFee\n      thirdBaseQuantity\n      thirdExtraFee\n      deliveryAreaType\n      area2ExtraFee\n      area3ExtraFee\n      visitAddressId\n      quickServiceArea\n      deliveryAttributeType\n      customProductAfterOrder\n      dispatchSalesDay\n      todayDispatchBasisTime\n      todayStockQuantity\n      __typename\n    }\n    productOptions {\n      groupName\n      id\n      name\n      optionType\n      productId\n      todayDispatch\n      __typename\n    }\n    productStatus\n    productSupplements {\n      groupName\n      id\n      name\n      price\n      productId\n      productStatusType\n      sellerManagementCode\n      stockQuantity\n      __typename\n    }\n    productUrl\n    purchasable\n    purchasableItemExist\n    purchaseQuantityPolicy {\n      maxPurchaseQuantityPerId\n      maxPurchaseQuantityPerOrder\n      minPurchaseQuantity\n      __typename\n    }\n    registerDateTime\n    representImageUrl\n    saleEndDateTime\n    salePrice\n    saleStartDateTime\n    sellerUrl\n    stockQuantity\n    storeKeepExclusiveProduct\n    subscriber\n    supplementUsable\n    totalPrice\n    totalQuantity\n    unpurchasableReasons {\n      ...unpurchasableReasonField\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment deliveryFeeField on DeliveryFee {\n  deliveryFeePayType\n  deliveryFeeType\n  deliveryMethodType\n  selectedDeliveryFeePayType\n  fee\n  discountedFee\n  __typename\n}\n\nfragment deliveryFeePolicyField on DeliveryFeePolicy {\n  baseDeliveryFee\n  deliveryFeePayType\n  deliveryFeeType\n  deliveryMethodTypes\n  freeBasisAmountCondition\n  membershipFreeBasisAmountCondition\n  repeatQuantity\n  section2ExtendedDeliveryFee\n  section2Quantity\n  section3ExtendedDeliveryFee\n  section3Quantity\n  __typename\n}\n\nfragment bundleProductDeliveryFeeField on BundleProductDeliveryFee {\n  bundlePolicy {\n    bundleKey\n    packingPolicy\n    deliveryAreaType\n    __typename\n  }\n  deliveryFee {\n    ...deliveryFeeField\n    __typename\n  }\n  deliveryFeePolicy {\n    ...deliveryFeePolicyField\n    __typename\n  }\n  productDeliveryBundleGroup {\n    area2ExtraFee\n    area3ExtraFee\n    bundleGroupId\n    deliveryAreaType\n    deliveryFeeChargeMethodType\n    __typename\n  }\n  __typename\n}\n\nfragment cartProductDiscountField on CartProductDiscount {\n  itemDiscountFee\n  managerImmediateDiscount {\n    applyCount\n    baseSalePrice\n    discountPolicy {\n      managerImmediateDiscountCostRatio\n      managerImmediateDiscountLimitedCountPerUser\n      managerImmediateDiscountMaxAmount\n      managerImmediateDiscountMobileOnly\n      managerImmediateDiscountPolicyNo\n      managerImmediateDiscountValue\n      managerImmediateDiscountValueUnit\n      __typename\n    }\n    discountValue\n    quantity\n    unitBaseSalePrice\n    unitDiscountValue\n    __typename\n  }\n  multiPurchaseDiscount {\n    applyCount\n    baseSalePrice\n    discountPolicy {\n      multiPurchaseDiscountValue\n      multiPurchaseDiscountValueUnit\n      multiPurchaseOrderUnit\n      multiPurchaseOrderValue\n      multiPurchaseDiscountStartDate\n      multiPurchaseDiscountEndDate\n      isMultiPurchaseDiscountEndDate\n      __typename\n    }\n    discountValue\n    quantity\n    unitBaseSalePrice\n    unitDiscountValue\n    __typename\n  }\n  quantityIgnoreDiscountMap\n  sellerImmediateDiscount {\n    applyCount\n    baseSalePrice\n    discountPolicy {\n      sellerImmediateDiscountPolicyNo\n      sellerImmediateDiscountValue\n      sellerImmediateDiscountValueUnit\n      __typename\n    }\n    discountValue\n    quantity\n    unitBaseSalePrice\n    unitDiscountValue\n    __typename\n  }\n  specialDiscount {\n    applyCount\n    baseSalePrice\n    discountPolicyList {\n      specialDiscountType\n      specialDiscountValue\n      specialDiscountValueUnit\n      __typename\n    }\n    discountValue\n    quantity\n    unitBaseSalePrice\n    unitDiscountValue\n    __typename\n  }\n  totalDiscountFee\n  totalPrice\n  __typename\n}\n\nfragment cartViewProductItemField on CartViewProductItem {\n  cartProductItemId\n  contentNames\n  elements {\n    elementId\n    groupNames\n    todayDispatch\n    type\n    values\n    __typename\n  }\n  itemNo\n  price\n  purchasable\n  quantity\n  supplementNames\n  optionAdditionalFee\n  type\n  unpurchasableReasons {\n    ...unpurchasableReasonField\n    __typename\n  }\n  updateNudge\n  __typename\n}\n\nfragment unpurchasableReasonField on UnpurchasableReason {\n  cartProductId\n  cartProductItemId\n  targetType\n  type\n  productId\n  itemNo\n  imageType\n  messageArgs\n  purchasableQuantity\n  __typename\n}\n",
+    "variables": {
+      "cartProductId": "20260312-67e2ff38-1d68-11f1-bac6-a0369fff9068",
+      "deviceType": "PC"
+    },
+    "headers": {
+      "x-schema-version": "2e428ba57ecffb44a16082caf2661aa409f0cd70e0fedd9bf945fc63ac02009c",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "referer": "https://shopping.naver.com/cart",
+      "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\"",
+      "sec-ch-ua-mobile": "?0",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+      "accept": "*/*",
+      "content-type": "application/json",
+      "request_session": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoYXNoS2V5IjoiYWE0NTQ5NzM2NDNkN2E0ZGY0MTc2NjU3OWQxZTUxNDNmNzBhOTBlNGM4ZDEzNWZkY2E5OTVmNGZmOTc4YzJhYyIsImlhdCI6MTc3MzI1MDczOSwiZXhwIjoxNzczMzQwNzM5fQ.5bEm5xxigKOStd2DOvw00gy6O1Jssn46BEJHGlxI8HE",
+      "cookie": "NAC=EV1YBAxGaOXQ; NACT=1; NNB=BOWP5V7YUSYWS; SRT30=1773249784; nid_inf=1193125204; NID_AUT=XY7u/UYiY+EUiJqreqe0/7uTOKxev7tbgKuV15fOYeLrGy47HwiGDMzKlxCn8Fq0; NID_SES=AAABrOTFTXHWpcofispw1BTYjbgZNAP6u4vQNrERpoeFwufPzoqqYffL4//SIQ8PGJ7L19yzMej5cruBvLmrXOWVZ6yNUFq6jeeaOeZiEszCWMU6ekRUU8Te6TH0eIpjB4VacjaCgWm79O3LFR1cPXa/EZFX1Z9zmCodvkKRTXo38u3pB91VWFabY+TR3/vfl/LuaEMhD9IQJ/8sL4ElA3OgCy7v7G27B3F42wJLyjWnTzvmEA58m2QfbsGBzW6fnqHsJY6NsBRjVop51uVRUhRPm6hdZj/CL5sTSJI9T91WEEwD0Uyvp6/spQ1RKx7Y1zalXS4Tpzo5UAlSYIpFyV2zaA9JYT7dJ+Pn0V/pMPQTLU83Qlk+1FgiYExhjhZiB1SQ8nhAkmO9/xUEFuHuN85GorkKQsqmfYAKFxfakLLxeQDDQshYMHb8GM2sDCVDVWQhpzSjTx9dLnnJrz6mMrROqWvoJhCxpo4cVUV/Ph4+cbZefinTjsYSauwMJHX1UguNZi6YLKtq5A/lNJdsH5d/0oAp8zGZCtP6nrLO/TCSdZL4DQ6orEB6hgPYYQuQ+BE2pQ==; SRT5=1773250243; cto_bundle=7RM6kF9lYk44bWIyVUtIZW9yN1VGJTJCUzQ0cG1ZUW5ZZ0gxRTVQNzlFakNodFNyY0FIQWVYVjJhN0lIY2lPMU1GWG9YWEVIYVY4MEsyV0VuNEZMT3ExakllWFZGSkgyMW1zJTJCQWZOQSUyRjVlUWpkSmxwJTJCcDZSUVFVJTJGRnplOGN5V1ZaemRxQ0xKVnRwJTJCOVlYYzNoJTJGSnhEa1NPa0YlMkZ3JTNEJTNE; BUC=YjSD9ioyoIvLOox7bUPpg23t2fnlfTkwDu0BFVUDkzQ=",
+      "origin": "https://shopping.naver.com"
+    }
+  },
+  "getCurrentCartNotice": {
+    "query": "query getCurrentCartNotice {\n  getCurrentCartNotice: getCartNoticeGW {\n    id\n    message\n    startDateTime\n    endDateTime\n    linkUrl\n    __typename\n  }\n}\n",
+    "variables": {},
+    "headers": {
+      "x-schema-version": "2e428ba57ecffb44a16082caf2661aa409f0cd70e0fedd9bf945fc63ac02009c",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "referer": "https://shopping.naver.com/cart",
+      "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\"",
+      "sec-ch-ua-mobile": "?0",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+      "accept": "*/*",
+      "content-type": "application/json",
+      "request_session": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoYXNoS2V5IjoiYWE0NTQ5NzM2NDNkN2E0ZGY0MTc2NjU3OWQxZTUxNDNmNzBhOTBlNGM4ZDEzNWZkY2E5OTVmNGZmOTc4YzJhYyIsImlhdCI6MTc3MzI1MDg4NSwiZXhwIjoxNzczMzQwODg1fQ.-Nkiumjvsu6Tt_VvBpvclWoC2z4yUbvM-cxV4yVNn4Y",
+      "cookie": "NAC=EV1YBAxGaOXQ; NACT=1; NNB=BOWP5V7YUSYWS; SRT30=1773249784; nid_inf=1193125204; NID_AUT=XY7u/UYiY+EUiJqreqe0/7uTOKxev7tbgKuV15fOYeLrGy47HwiGDMzKlxCn8Fq0; NID_SES=AAABrOTFTXHWpcofispw1BTYjbgZNAP6u4vQNrERpoeFwufPzoqqYffL4//SIQ8PGJ7L19yzMej5cruBvLmrXOWVZ6yNUFq6jeeaOeZiEszCWMU6ekRUU8Te6TH0eIpjB4VacjaCgWm79O3LFR1cPXa/EZFX1Z9zmCodvkKRTXo38u3pB91VWFabY+TR3/vfl/LuaEMhD9IQJ/8sL4ElA3OgCy7v7G27B3F42wJLyjWnTzvmEA58m2QfbsGBzW6fnqHsJY6NsBRjVop51uVRUhRPm6hdZj/CL5sTSJI9T91WEEwD0Uyvp6/spQ1RKx7Y1zalXS4Tpzo5UAlSYIpFyV2zaA9JYT7dJ+Pn0V/pMPQTLU83Qlk+1FgiYExhjhZiB1SQ8nhAkmO9/xUEFuHuN85GorkKQsqmfYAKFxfakLLxeQDDQshYMHb8GM2sDCVDVWQhpzSjTx9dLnnJrz6mMrROqWvoJhCxpo4cVUV/Ph4+cbZefinTjsYSauwMJHX1UguNZi6YLKtq5A/lNJdsH5d/0oAp8zGZCtP6nrLO/TCSdZL4DQ6orEB6hgPYYQuQ+BE2pQ==; SRT5=1773250243; cto_bundle=7RM6kF9lYk44bWIyVUtIZW9yN1VGJTJCUzQ0cG1ZUW5ZZ0gxRTVQNzlFakNodFNyY0FIQWVYVjJhN0lIY2lPMU1GWG9YWEVIYVY4MEsyV0VuNEZMT3ExakllWFZGSkgyMW1zJTJCQWZOQSUyRjVlUWpkSmxwJTJCcDZSUVFVJTJGRnplOGN5V1ZaemRxQ0xKVnRwJTJCOVlYYzNoJTJGSnhEa1NPa0YlMkZ3JTNEJTNE; BUC=EsELwaIEwomK66hl65dt1tH7q9qADRj3WDzrwlGHB1w=",
+      "origin": "https://shopping.naver.com"
+    }
+  },
+  "getGeneralCartCacheView": {
+    "query": "query getGeneralCartCacheView($channelNo: BigInt, $nudgeProdId: BigInt) {\n  getGeneralCartCacheView: getGeneralCartCacheViewShopperGW(\n    channelNo: $channelNo\n    nudgeProdId: $nudgeProdId\n  ) {\n    itemsCount\n    productsCount\n    memberId\n    stores {\n      ...cartViewStoreField\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment cartViewStoreField on CartViewStore {\n  itemsCount\n  totalPrice\n  totalDeliveryFee\n  totalDiscountFee\n  discountedTotalDeliveryFee\n  merchant {\n    customerCenterTelNo\n    merchantName\n    merchantNo\n    merchantStatus\n    merchantUrl\n    __typename\n  }\n  accountNo\n  products {\n    ...cartViewProductField\n    __typename\n  }\n  deliveryBenefit {\n    notEligibleForFreeShippingAndReturns\n    notEligibleForFreeShipping\n    hopeSellerGuaranteeExist\n    deliveryGuaranteeExist\n    freeShippingSatisfied\n    __typename\n  }\n  __typename\n}\n\nfragment cartViewProductField on CartViewProduct {\n  cartType\n  authViolation\n  authenticationType\n  blackConsumer\n  bundleDeliveryFee {\n    ...bundleProductDeliveryFeeField\n    __typename\n  }\n  cartProductId\n  channel {\n    channelName\n    channelNo\n    channelUid\n    channelSiteFullUrl\n    naSiteId\n    naverPaySellerNo\n    sellerExternalStatusType\n    accountUid\n    __typename\n  }\n  channelProductSupplyType\n  channelServiceSubName\n  channelServiceType\n  customProductType\n  dispatchSalesDay\n  deliveryAttributeType\n  cartDeliveryAttributeType\n  originalDeliveryAttributeType\n  deliveryFeePayType\n  deliveryMethodType\n  deliveryMethodTypes\n  deliveryFee {\n    deliveryFee {\n      ...deliveryFeeField\n      __typename\n    }\n    deliveryFeePolicy {\n      ...deliveryFeePolicyField\n      __typename\n    }\n    __typename\n  }\n  deliveryPrediction {\n    day\n    percentage\n    __typename\n  }\n  discount {\n    ...cartProductDiscountField\n    __typename\n  }\n  displayGroupKey\n  hopeDelivery {\n    deliveryCompanyName\n    region\n    additionalFee\n    hopeDeliveryDate\n    hopeDeliveryTime\n    needToBeChanged\n    needToBeSelected\n    updatedByMerge\n    __typename\n  }\n  items {\n    ...cartViewProductItemField\n    __typename\n  }\n  keep\n  name\n  optionUsable\n  overseaDelivery\n  cultureCostIncomeDeduction\n  freeReturnInsurance\n  pointPlus\n  preOrder {\n    minOrderQuantity\n    deliveryStartDateTime\n    deliveryEndDateTime\n    __typename\n  }\n  presentContent\n  productId\n  productNo\n  productStatus\n  productUrl\n  purchasable\n  purchasableItemExist\n  purchaseQuantityPolicy {\n    maxPurchaseQuantityPerId\n    maxPurchaseQuantityPerOrder\n    minPurchaseQuantity\n    __typename\n  }\n  registerDateTime\n  representImageUrl\n  saleEndDateTime\n  salePrice\n  saleStartDateTime\n  stockQuantity\n  storeKeepExclusiveProduct\n  subscriber\n  supplementUsable\n  todayDispatch {\n    todayDispatch\n    todayDispatchBasisTime\n    todayDispatchExpectedDateTime\n    todayDispatchNotAppliedReason\n    todayDispatchOutOfStock\n    todayStockQuantity\n    __typename\n  }\n  totalPrice\n  totalPriceExcludingSupplement\n  totalQuantity\n  trCode\n  trackChannel\n  fulfillmentArrivalDateTime\n  fulfillmentOrderDeadline\n  fulfillmentTagType\n  productNvMid\n  unpurchasableReasons {\n    ...unpurchasableReasonField\n    __typename\n  }\n  wholeCategoryId\n  categoryId1\n  categoryId2\n  categoryId3\n  categoryId4\n  leafCategoryId\n  giftingAvailable\n  eCoupon\n  installation\n  installationFee\n  productNudge {\n    productNudgeType\n    productNudgeStatus\n    diffDiscountPrice\n    immediateDiscountPrice\n    firstImmediateDiscountPrice\n    __typename\n  }\n  pointAccumulationAvailable\n  benefitExcluded\n  lastAddedDateTime\n  __typename\n}\n\nfragment bundleProductDeliveryFeeField on BundleProductDeliveryFee {\n  bundlePolicy {\n    bundleKey\n    packingPolicy\n    deliveryAreaType\n    __typename\n  }\n  deliveryFee {\n    ...deliveryFeeField\n    __typename\n  }\n  deliveryFeePolicy {\n    ...deliveryFeePolicyField\n    __typename\n  }\n  productDeliveryBundleGroup {\n    area2ExtraFee\n    area3ExtraFee\n    bundleGroupId\n    deliveryAreaType\n    deliveryFeeChargeMethodType\n    __typename\n  }\n  __typename\n}\n\nfragment deliveryFeeField on DeliveryFee {\n  deliveryFeePayType\n  deliveryFeeType\n  deliveryMethodType\n  selectedDeliveryFeePayType\n  fee\n  discountedFee\n  __typename\n}\n\nfragment deliveryFeePolicyField on DeliveryFeePolicy {\n  baseDeliveryFee\n  deliveryFeePayType\n  deliveryFeeType\n  deliveryMethodTypes\n  freeBasisAmountCondition\n  membershipFreeBasisAmountCondition\n  repeatQuantity\n  section2ExtendedDeliveryFee\n  section2Quantity\n  section3ExtendedDeliveryFee\n  section3Quantity\n  __typename\n}\n\nfragment cartProductDiscountField on CartProductDiscount {\n  itemDiscountFee\n  managerImmediateDiscount {\n    applyCount\n    baseSalePrice\n    discountPolicy {\n      managerImmediateDiscountCostRatio\n      managerImmediateDiscountLimitedCountPerUser\n      managerImmediateDiscountMaxAmount\n      managerImmediateDiscountMobileOnly\n      managerImmediateDiscountPolicyNo\n      managerImmediateDiscountValue\n      managerImmediateDiscountValueUnit\n      __typename\n    }\n    discountValue\n    quantity\n    unitBaseSalePrice\n    unitDiscountValue\n    __typename\n  }\n  multiPurchaseDiscount {\n    applyCount\n    baseSalePrice\n    discountPolicy {\n      multiPurchaseDiscountValue\n      multiPurchaseDiscountValueUnit\n      multiPurchaseOrderUnit\n      multiPurchaseOrderValue\n      multiPurchaseDiscountStartDate\n      multiPurchaseDiscountEndDate\n      isMultiPurchaseDiscountEndDate\n      __typename\n    }\n    discountValue\n    quantity\n    unitBaseSalePrice\n    unitDiscountValue\n    __typename\n  }\n  quantityIgnoreDiscountMap\n  sellerImmediateDiscount {\n    applyCount\n    baseSalePrice\n    discountPolicy {\n      sellerImmediateDiscountPolicyNo\n      sellerImmediateDiscountValue\n      sellerImmediateDiscountValueUnit\n      __typename\n    }\n    discountValue\n    quantity\n    unitBaseSalePrice\n    unitDiscountValue\n    __typename\n  }\n  specialDiscount {\n    applyCount\n    baseSalePrice\n    discountPolicyList {\n      specialDiscountType\n      specialDiscountValue\n      specialDiscountValueUnit\n      __typename\n    }\n    discountValue\n    quantity\n    unitBaseSalePrice\n    unitDiscountValue\n    __typename\n  }\n  totalDiscountFee\n  totalPrice\n  __typename\n}\n\nfragment cartViewProductItemField on CartViewProductItem {\n  cartProductItemId\n  contentNames\n  elements {\n    elementId\n    groupNames\n    todayDispatch\n    type\n    values\n    __typename\n  }\n  itemNo\n  price\n  purchasable\n  quantity\n  supplementNames\n  optionAdditionalFee\n  type\n  unpurchasableReasons {\n    ...unpurchasableReasonField\n    __typename\n  }\n  updateNudge\n  __typename\n}\n\nfragment unpurchasableReasonField on UnpurchasableReason {\n  cartProductId\n  cartProductItemId\n  targetType\n  type\n  productId\n  itemNo\n  imageType\n  messageArgs\n  purchasableQuantity\n  __typename\n}\n",
+    "variables": {},
+    "headers": {
+      "x-schema-version": "2e428ba57ecffb44a16082caf2661aa409f0cd70e0fedd9bf945fc63ac02009c",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "referer": "https://shopping.naver.com/cart",
+      "sec-ch-ua": "\"Chromium\";v=\"146\", \"Not-A.Brand\";v=\"24\", \"Google Chrome\";v=\"146\"",
+      "sec-ch-ua-mobile": "?0",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+      "accept": "*/*",
+      "content-type": "application/json",
+      "request_session": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoYXNoS2V5IjoiYWE0NTQ5NzM2NDNkN2E0ZGY0MTc2NjU3OWQxZTUxNDNmNzBhOTBlNGM4ZDEzNWZkY2E5OTVmNGZmOTc4YzJhYyIsImlhdCI6MTc3MzUwMTEyNywiZXhwIjoxNzczNTkxMTI3fQ.fwOgxEPo-vN0vkj8nRd95lHuIA0a2UzDB1RxlVB4foA",
+      "cookie": "NAC=vNbcBAhKOCpP; NACT=1; NNB=H2KNIY7XPC2WS; SRT30=1773500663; SRT5=1773500663; nid_inf=1198078759; NID_AUT=GFF8hygDaH8tfGJ1cZV2fsPg2aYbg2gQzdi8g/TFTPuBRg/5umcB93ovMmXiVv/D; NID_SES=AAABrTCYLdHnQYaXsN0PLICjJ/qF/yXYyY2Mvsp2UJ2PWGg8eqRBk1EzyblwXZvoE6gC1BQYFp0k+vGKuEb/ZH3/2xX3bePqvqiD57wpcbKRAEK4plku8GBgnjDdTr1eXATsCg25yxKqNc/RcomUZmrF1A+MFC1NuhOuzLL+moAKhCv/Wua25xdpsnamrOXZVVT1cYzeteeiA+wUR+1ZbNlCgc9H2/r9HKjiaCBcKQV/+5dJ5O3otV9sREd3RwSrsSi7WmhYNEZjb4SB5NsEQd2opHpulKFX9ffY3413j7Cr+ACg/1ElMh45dpX/pfrMtqOYb/S0ChYcdLecnReHZ2kqLnUAOYKsTe57WfuQUziaB5Vsip8BkpNjct3vAlS0P5A131KGnNCWqDLGEtiuVJGL4EtCPk1x7aI74lFSuIy457oE+gxhveemPMH3vKcWN8zBh429wGNEmCpXvMG+yxsBYQCDSoQjz+1ZJhAj1LHvJWsiWSCg3yBbW1eCjd5W0v4JHHW3MnZPn/m4fcfpKHZPLqRvKODkGkYJZzwPXYvV6GrllTsFFA3ayICbnunIw5QE8Q==; cto_bundle=vVmvwV9vTUhyMlA4SHBTV092Nlh1VXBHbmd6NTlIYTFaJTJCZ3dsOFlIdU1MTTFXNUtVNFNzSWxHQ1lvTDEzdHBzY1o5MkIzMUl5ZlclMkZ0bXNuR1ZHJTJCZFM5RVAyQm1PaWh4MXpUdzVUYXlGeFlGSzB5VU5sMWJPcHlqR2lWN2JwV2NmZTBQdTFJS2h6OWNJNzN2YjlpWlIxNklIckhiYjdjQXcyUUdocFZUenZEdG5NamNVMkNLU1NNME1ybW9aWkNvOTZJbmE; BUC=JDZFUlV1j-ZGDiGguF15EY0a_OSjoGQ39gnNGutEs0Q=",
+      "origin": "https://shopping.naver.com"
+    }
+  },
+  "getGeneralCartUserInfo": {
+    "query": "query getGeneralCartUserInfo($errorCode: Int) {\n  getGeneralCartUserInfo: getGeneralCartUserInfoShopperGW(errorCode: $errorCode) {\n    memberId\n    membershipDetail {\n      membership\n      membershipNudgeType\n      couponDiscount\n      customTitle\n      membershipDeliveryBenefitType\n      __typename\n    }\n    __typename\n  }\n}\n",
+    "variables": {},
+    "headers": {
+      "x-schema-version": "2e428ba57ecffb44a16082caf2661aa409f0cd70e0fedd9bf945fc63ac02009c",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "referer": "https://shopping.naver.com/cart",
+      "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\"",
+      "sec-ch-ua-mobile": "?0",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+      "accept": "*/*",
+      "content-type": "application/json",
+      "request_session": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoYXNoS2V5IjoiYWE0NTQ5NzM2NDNkN2E0ZGY0MTc2NjU3OWQxZTUxNDNmNzBhOTBlNGM4ZDEzNWZkY2E5OTVmNGZmOTc4YzJhYyIsImlhdCI6MTc3MzI1MDg4NSwiZXhwIjoxNzczMzQwODg1fQ.-Nkiumjvsu6Tt_VvBpvclWoC2z4yUbvM-cxV4yVNn4Y",
+      "cookie": "NAC=EV1YBAxGaOXQ; NACT=1; NNB=BOWP5V7YUSYWS; SRT30=1773249784; nid_inf=1193125204; NID_AUT=XY7u/UYiY+EUiJqreqe0/7uTOKxev7tbgKuV15fOYeLrGy47HwiGDMzKlxCn8Fq0; NID_SES=AAABrOTFTXHWpcofispw1BTYjbgZNAP6u4vQNrERpoeFwufPzoqqYffL4//SIQ8PGJ7L19yzMej5cruBvLmrXOWVZ6yNUFq6jeeaOeZiEszCWMU6ekRUU8Te6TH0eIpjB4VacjaCgWm79O3LFR1cPXa/EZFX1Z9zmCodvkKRTXo38u3pB91VWFabY+TR3/vfl/LuaEMhD9IQJ/8sL4ElA3OgCy7v7G27B3F42wJLyjWnTzvmEA58m2QfbsGBzW6fnqHsJY6NsBRjVop51uVRUhRPm6hdZj/CL5sTSJI9T91WEEwD0Uyvp6/spQ1RKx7Y1zalXS4Tpzo5UAlSYIpFyV2zaA9JYT7dJ+Pn0V/pMPQTLU83Qlk+1FgiYExhjhZiB1SQ8nhAkmO9/xUEFuHuN85GorkKQsqmfYAKFxfakLLxeQDDQshYMHb8GM2sDCVDVWQhpzSjTx9dLnnJrz6mMrROqWvoJhCxpo4cVUV/Ph4+cbZefinTjsYSauwMJHX1UguNZi6YLKtq5A/lNJdsH5d/0oAp8zGZCtP6nrLO/TCSdZL4DQ6orEB6hgPYYQuQ+BE2pQ==; SRT5=1773250243; cto_bundle=7RM6kF9lYk44bWIyVUtIZW9yN1VGJTJCUzQ0cG1ZUW5ZZ0gxRTVQNzlFakNodFNyY0FIQWVYVjJhN0lIY2lPMU1GWG9YWEVIYVY4MEsyV0VuNEZMT3ExakllWFZGSkgyMW1zJTJCQWZOQSUyRjVlUWpkSmxwJTJCcDZSUVFVJTJGRnplOGN5V1ZaemRxQ0xKVnRwJTJCOVlYYzNoJTJGSnhEa1NPa0YlMkZ3JTNEJTNE; BUC=EsELwaIEwomK66hl65dt1tH7q9qADRj3WDzrwlGHB1w=",
+      "origin": "https://shopping.naver.com"
+    }
+  },
+  "getShippingAddresses": {
+    "query": "query getShippingAddresses {\n  shippingAddress: getShippingAddressesV2ShopperGW {\n    content {\n      data {\n        hash\n        addressName\n        zipCode\n        baseAddress\n        detailAddress\n        roadNameYn\n        latitude\n        longitude\n        primaryYn\n        recentlyUsedYn\n        buildingManagementNo\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n",
+    "variables": {},
+    "headers": {
+      "x-schema-version": "2e428ba57ecffb44a16082caf2661aa409f0cd70e0fedd9bf945fc63ac02009c",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "referer": "https://shopping.naver.com/cart",
+      "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\"",
+      "sec-ch-ua-mobile": "?0",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+      "accept": "*/*",
+      "content-type": "application/json",
+      "request_session": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoYXNoS2V5IjoiYWE0NTQ5NzM2NDNkN2E0ZGY0MTc2NjU3OWQxZTUxNDNmNzBhOTBlNGM4ZDEzNWZkY2E5OTVmNGZmOTc4YzJhYyIsImlhdCI6MTc3MzI1MDg4NSwiZXhwIjoxNzczMzQwODg1fQ.-Nkiumjvsu6Tt_VvBpvclWoC2z4yUbvM-cxV4yVNn4Y",
+      "cookie": "NAC=EV1YBAxGaOXQ; NACT=1; NNB=BOWP5V7YUSYWS; SRT30=1773249784; nid_inf=1193125204; NID_AUT=XY7u/UYiY+EUiJqreqe0/7uTOKxev7tbgKuV15fOYeLrGy47HwiGDMzKlxCn8Fq0; NID_SES=AAABrOTFTXHWpcofispw1BTYjbgZNAP6u4vQNrERpoeFwufPzoqqYffL4//SIQ8PGJ7L19yzMej5cruBvLmrXOWVZ6yNUFq6jeeaOeZiEszCWMU6ekRUU8Te6TH0eIpjB4VacjaCgWm79O3LFR1cPXa/EZFX1Z9zmCodvkKRTXo38u3pB91VWFabY+TR3/vfl/LuaEMhD9IQJ/8sL4ElA3OgCy7v7G27B3F42wJLyjWnTzvmEA58m2QfbsGBzW6fnqHsJY6NsBRjVop51uVRUhRPm6hdZj/CL5sTSJI9T91WEEwD0Uyvp6/spQ1RKx7Y1zalXS4Tpzo5UAlSYIpFyV2zaA9JYT7dJ+Pn0V/pMPQTLU83Qlk+1FgiYExhjhZiB1SQ8nhAkmO9/xUEFuHuN85GorkKQsqmfYAKFxfakLLxeQDDQshYMHb8GM2sDCVDVWQhpzSjTx9dLnnJrz6mMrROqWvoJhCxpo4cVUV/Ph4+cbZefinTjsYSauwMJHX1UguNZi6YLKtq5A/lNJdsH5d/0oAp8zGZCtP6nrLO/TCSdZL4DQ6orEB6hgPYYQuQ+BE2pQ==; SRT5=1773250243; cto_bundle=7RM6kF9lYk44bWIyVUtIZW9yN1VGJTJCUzQ0cG1ZUW5ZZ0gxRTVQNzlFakNodFNyY0FIQWVYVjJhN0lIY2lPMU1GWG9YWEVIYVY4MEsyV0VuNEZMT3ExakllWFZGSkgyMW1zJTJCQWZOQSUyRjVlUWpkSmxwJTJCcDZSUVFVJTJGRnplOGN5V1ZaemRxQ0xKVnRwJTJCOVlYYzNoJTJGSnhEa1NPa0YlMkZ3JTNEJTNE; BUC=EsELwaIEwomK66hl65dt1tH7q9qADRj3WDzrwlGHB1w=",
+      "origin": "https://shopping.naver.com"
+    }
+  },
+  "productsCount": {
+    "query": "query productsCount {\n  cartProductsCount: productsCountShopperGW {\n    generalCart\n    designatedCart\n    __typename\n  }\n}\n",
+    "variables": {},
+    "headers": {
+      "x-schema-version": "2e428ba57ecffb44a16082caf2661aa409f0cd70e0fedd9bf945fc63ac02009c",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "referer": "https://shopping.naver.com/cart",
+      "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\"",
+      "sec-ch-ua-mobile": "?0",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+      "accept": "*/*",
+      "content-type": "application/json",
+      "request_session": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoYXNoS2V5IjoiYWE0NTQ5NzM2NDNkN2E0ZGY0MTc2NjU3OWQxZTUxNDNmNzBhOTBlNGM4ZDEzNWZkY2E5OTVmNGZmOTc4YzJhYyIsImlhdCI6MTc3MzI1MDg4NSwiZXhwIjoxNzczMzQwODg1fQ.-Nkiumjvsu6Tt_VvBpvclWoC2z4yUbvM-cxV4yVNn4Y",
+      "cookie": "NAC=EV1YBAxGaOXQ; NACT=1; NNB=BOWP5V7YUSYWS; SRT30=1773249784; nid_inf=1193125204; NID_AUT=XY7u/UYiY+EUiJqreqe0/7uTOKxev7tbgKuV15fOYeLrGy47HwiGDMzKlxCn8Fq0; NID_SES=AAABrOTFTXHWpcofispw1BTYjbgZNAP6u4vQNrERpoeFwufPzoqqYffL4//SIQ8PGJ7L19yzMej5cruBvLmrXOWVZ6yNUFq6jeeaOeZiEszCWMU6ekRUU8Te6TH0eIpjB4VacjaCgWm79O3LFR1cPXa/EZFX1Z9zmCodvkKRTXo38u3pB91VWFabY+TR3/vfl/LuaEMhD9IQJ/8sL4ElA3OgCy7v7G27B3F42wJLyjWnTzvmEA58m2QfbsGBzW6fnqHsJY6NsBRjVop51uVRUhRPm6hdZj/CL5sTSJI9T91WEEwD0Uyvp6/spQ1RKx7Y1zalXS4Tpzo5UAlSYIpFyV2zaA9JYT7dJ+Pn0V/pMPQTLU83Qlk+1FgiYExhjhZiB1SQ8nhAkmO9/xUEFuHuN85GorkKQsqmfYAKFxfakLLxeQDDQshYMHb8GM2sDCVDVWQhpzSjTx9dLnnJrz6mMrROqWvoJhCxpo4cVUV/Ph4+cbZefinTjsYSauwMJHX1UguNZi6YLKtq5A/lNJdsH5d/0oAp8zGZCtP6nrLO/TCSdZL4DQ6orEB6hgPYYQuQ+BE2pQ==; SRT5=1773250243; cto_bundle=7RM6kF9lYk44bWIyVUtIZW9yN1VGJTJCUzQ0cG1ZUW5ZZ0gxRTVQNzlFakNodFNyY0FIQWVYVjJhN0lIY2lPMU1GWG9YWEVIYVY4MEsyV0VuNEZMT3ExakllWFZGSkgyMW1zJTJCQWZOQSUyRjVlUWpkSmxwJTJCcDZSUVFVJTJGRnplOGN5V1ZaemRxQ0xKVnRwJTJCOVlYYzNoJTJGSnhEa1NPa0YlMkZ3JTNEJTNE; BUC=EsELwaIEwomK66hl65dt1tH7q9qADRj3WDzrwlGHB1w=",
+      "origin": "https://shopping.naver.com"
+    }
+  },
+  "getCartViewStores": {
+    "query": "query getCartViewStores($sellerNos: [BigInt]!, $deviceType: DeviceType, $cartTypes: [String]!, $shpLiveExtras: String) {\n  getCartViewStores: getCartViewStoresShopperGW(\n    sellerNos: $sellerNos\n    deviceType: $deviceType\n    cartTypes: $cartTypes\n    shpLiveExtras: $shpLiveExtras\n  ) {\n    itemsCount\n    productsCount\n    memberId\n    membershipDetail {\n      membership\n      membershipNudgeType\n      couponDiscount\n      customTitle\n      membershipDeliveryBenefitType\n      __typename\n    }\n    stores {\n      ...cartViewStoreField\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment cartViewStoreField on CartViewStore {\n  itemsCount\n  totalPrice\n  totalDeliveryFee\n  totalDiscountFee\n  discountedTotalDeliveryFee\n  merchant {\n    customerCenterTelNo\n    merchantName\n    merchantNo\n    merchantStatus\n    merchantUrl\n    __typename\n  }\n  accountNo\n  products {\n    ...cartViewProductField\n    __typename\n  }\n  deliveryBenefit {\n    notEligibleForFreeShippingAndReturns\n    notEligibleForFreeShipping\n    hopeSellerGuaranteeExist\n    deliveryGuaranteeExist\n    freeShippingSatisfied\n    __typename\n  }\n  __typename\n}\n\nfragment cartViewProductField on CartViewProduct {\n  cartType\n  authViolation\n  authenticationType\n  blackConsumer\n  bundleDeliveryFee {\n    ...bundleProductDeliveryFeeField\n    __typename\n  }\n  cartProductId\n  channel {\n    channelName\n    channelNo\n    channelUid\n    channelSiteFullUrl\n    naSiteId\n    naverPaySellerNo\n    sellerExternalStatusType\n    accountUid\n    __typename\n  }\n  channelProductSupplyType\n  channelServiceSubName\n  channelServiceType\n  customProductType\n  dispatchSalesDay\n  deliveryAttributeType\n  cartDeliveryAttributeType\n  originalDeliveryAttributeType\n  deliveryFeePayType\n  deliveryMethodType\n  deliveryMethodTypes\n  deliveryFee {\n    deliveryFee {\n      ...deliveryFeeField\n      __typename\n    }\n    deliveryFeePolicy {\n      ...deliveryFeePolicyField\n      __typename\n    }\n    __typename\n  }\n  deliveryPrediction {\n    day\n    percentage\n    __typename\n  }\n  discount {\n    ...cartProductDiscountField\n    __typename\n  }\n  displayGroupKey\n  hopeDelivery {\n    deliveryCompanyName\n    region\n    additionalFee\n    hopeDeliveryDate\n    hopeDeliveryTime\n    needToBeChanged\n    needToBeSelected\n    updatedByMerge\n    __typename\n  }\n  items {\n    ...cartViewProductItemField\n    __typename\n  }\n  keep\n  name\n  optionUsable\n  overseaDelivery\n  cultureCostIncomeDeduction\n  freeReturnInsurance\n  pointPlus\n  preOrder {\n    minOrderQuantity\n    deliveryStartDateTime\n    deliveryEndDateTime\n    __typename\n  }\n  presentContent\n  productId\n  productNo\n  productStatus\n  productUrl\n  purchasable\n  purchasableItemExist\n  purchaseQuantityPolicy {\n    maxPurchaseQuantityPerId\n    maxPurchaseQuantityPerOrder\n    minPurchaseQuantity\n    __typename\n  }\n  registerDateTime\n  representImageUrl\n  saleEndDateTime\n  salePrice\n  saleStartDateTime\n  stockQuantity\n  storeKeepExclusiveProduct\n  subscriber\n  supplementUsable\n  todayDispatch {\n    todayDispatch\n    todayDispatchBasisTime\n    todayDispatchExpectedDateTime\n    todayDispatchNotAppliedReason\n    todayDispatchOutOfStock\n    todayStockQuantity\n    __typename\n  }\n  totalPrice\n  totalPriceExcludingSupplement\n  totalQuantity\n  trCode\n  trackChannel\n  fulfillmentArrivalDateTime\n  fulfillmentOrderDeadline\n  fulfillmentTagType\n  productNvMid\n  unpurchasableReasons {\n    ...unpurchasableReasonField\n    __typename\n  }\n  wholeCategoryId\n  categoryId1\n  categoryId2\n  categoryId3\n  categoryId4\n  leafCategoryId\n  giftingAvailable\n  eCoupon\n  installation\n  installationFee\n  productNudge {\n    productNudgeType\n    productNudgeStatus\n    diffDiscountPrice\n    immediateDiscountPrice\n    firstImmediateDiscountPrice\n    __typename\n  }\n  pointAccumulationAvailable\n  benefitExcluded\n  lastAddedDateTime\n  __typename\n}\n\nfragment bundleProductDeliveryFeeField on BundleProductDeliveryFee {\n  bundlePolicy {\n    bundleKey\n    packingPolicy\n    deliveryAreaType\n    __typename\n  }\n  deliveryFee {\n    ...deliveryFeeField\n    __typename\n  }\n  deliveryFeePolicy {\n    ...deliveryFeePolicyField\n    __typename\n  }\n  productDeliveryBundleGroup {\n    area2ExtraFee\n    area3ExtraFee\n    bundleGroupId\n    deliveryAreaType\n    deliveryFeeChargeMethodType\n    __typename\n  }\n  __typename\n}\n\nfragment deliveryFeeField on DeliveryFee {\n  deliveryFeePayType\n  deliveryFeeType\n  deliveryMethodType\n  selectedDeliveryFeePayType\n  fee\n  discountedFee\n  __typename\n}\n\nfragment deliveryFeePolicyField on DeliveryFeePolicy {\n  baseDeliveryFee\n  deliveryFeePayType\n  deliveryFeeType\n  deliveryMethodTypes\n  freeBasisAmountCondition\n  membershipFreeBasisAmountCondition\n  repeatQuantity\n  section2ExtendedDeliveryFee\n  section2Quantity\n  section3ExtendedDeliveryFee\n  section3Quantity\n  __typename\n}\n\nfragment cartProductDiscountField on CartProductDiscount {\n  itemDiscountFee\n  managerImmediateDiscount {\n    applyCount\n    baseSalePrice\n    discountPolicy {\n      managerImmediateDiscountCostRatio\n      managerImmediateDiscountLimitedCountPerUser\n      managerImmediateDiscountMaxAmount\n      managerImmediateDiscountMobileOnly\n      managerImmediateDiscountPolicyNo\n      managerImmediateDiscountValue\n      managerImmediateDiscountValueUnit\n      __typename\n    }\n    discountValue\n    quantity\n    unitBaseSalePrice\n    unitDiscountValue\n    __typename\n  }\n  multiPurchaseDiscount {\n    applyCount\n    baseSalePrice\n    discountPolicy {\n      multiPurchaseDiscountValue\n      multiPurchaseDiscountValueUnit\n      multiPurchaseOrderUnit\n      multiPurchaseOrderValue\n      multiPurchaseDiscountStartDate\n      multiPurchaseDiscountEndDate\n      isMultiPurchaseDiscountEndDate\n      __typename\n    }\n    discountValue\n    quantity\n    unitBaseSalePrice\n    unitDiscountValue\n    __typename\n  }\n  quantityIgnoreDiscountMap\n  sellerImmediateDiscount {\n    applyCount\n    baseSalePrice\n    discountPolicy {\n      sellerImmediateDiscountPolicyNo\n      sellerImmediateDiscountValue\n      sellerImmediateDiscountValueUnit\n      __typename\n    }\n    discountValue\n    quantity\n    unitBaseSalePrice\n    unitDiscountValue\n    __typename\n  }\n  specialDiscount {\n    applyCount\n    baseSalePrice\n    discountPolicyList {\n      specialDiscountType\n      specialDiscountValue\n      specialDiscountValueUnit\n      __typename\n    }\n    discountValue\n    quantity\n    unitBaseSalePrice\n    unitDiscountValue\n    __typename\n  }\n  totalDiscountFee\n  totalPrice\n  __typename\n}\n\nfragment cartViewProductItemField on CartViewProductItem {\n  cartProductItemId\n  contentNames\n  elements {\n    elementId\n    groupNames\n    todayDispatch\n    type\n    values\n    __typename\n  }\n  itemNo\n  price\n  purchasable\n  quantity\n  supplementNames\n  optionAdditionalFee\n  type\n  unpurchasableReasons {\n    ...unpurchasableReasonField\n    __typename\n  }\n  updateNudge\n  __typename\n}\n\nfragment unpurchasableReasonField on UnpurchasableReason {\n  cartProductId\n  cartProductItemId\n  targetType\n  type\n  productId\n  itemNo\n  imageType\n  messageArgs\n  purchasableQuantity\n  __typename\n}\n",
+    "variables": {
+      "sellerNos": [
+        511185921
+      ],
+      "deviceType": "PC",
+      "cartTypes": [
+        "CART",
+        "DEPARTMENT_MARKET",
+        "TRADITIONAL_MARKET",
+        "NECESSITY"
+      ]
+    },
+    "headers": {
+      "x-schema-version": "2e428ba57ecffb44a16082caf2661aa409f0cd70e0fedd9bf945fc63ac02009c",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "referer": "https://shopping.naver.com/cart",
+      "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\"",
+      "sec-ch-ua-mobile": "?0",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+      "accept": "*/*",
+      "content-type": "application/json",
+      "request_session": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoYXNoS2V5IjoiYWE0NTQ5NzM2NDNkN2E0ZGY0MTc2NjU3OWQxZTUxNDNmNzBhOTBlNGM4ZDEzNWZkY2E5OTVmNGZmOTc4YzJhYyIsImlhdCI6MTc3MzI1MDg4NSwiZXhwIjoxNzczMzQwODg1fQ.-Nkiumjvsu6Tt_VvBpvclWoC2z4yUbvM-cxV4yVNn4Y",
+      "cookie": "NAC=EV1YBAxGaOXQ; NACT=1; NNB=BOWP5V7YUSYWS; SRT30=1773249784; nid_inf=1193125204; NID_AUT=XY7u/UYiY+EUiJqreqe0/7uTOKxev7tbgKuV15fOYeLrGy47HwiGDMzKlxCn8Fq0; NID_SES=AAABrOTFTXHWpcofispw1BTYjbgZNAP6u4vQNrERpoeFwufPzoqqYffL4//SIQ8PGJ7L19yzMej5cruBvLmrXOWVZ6yNUFq6jeeaOeZiEszCWMU6ekRUU8Te6TH0eIpjB4VacjaCgWm79O3LFR1cPXa/EZFX1Z9zmCodvkKRTXo38u3pB91VWFabY+TR3/vfl/LuaEMhD9IQJ/8sL4ElA3OgCy7v7G27B3F42wJLyjWnTzvmEA58m2QfbsGBzW6fnqHsJY6NsBRjVop51uVRUhRPm6hdZj/CL5sTSJI9T91WEEwD0Uyvp6/spQ1RKx7Y1zalXS4Tpzo5UAlSYIpFyV2zaA9JYT7dJ+Pn0V/pMPQTLU83Qlk+1FgiYExhjhZiB1SQ8nhAkmO9/xUEFuHuN85GorkKQsqmfYAKFxfakLLxeQDDQshYMHb8GM2sDCVDVWQhpzSjTx9dLnnJrz6mMrROqWvoJhCxpo4cVUV/Ph4+cbZefinTjsYSauwMJHX1UguNZi6YLKtq5A/lNJdsH5d/0oAp8zGZCtP6nrLO/TCSdZL4DQ6orEB6hgPYYQuQ+BE2pQ==; SRT5=1773250243; BUC=EsELwaIEwomK66hl65dt1tH7q9qADRj3WDzrwlGHB1w=; cto_bundle=j2s5jF9lYk44bWIyVUtIZW9yN1VGJTJCUzQ0cGt4ajBMZm5iN2l1N0RuWlR1OUQ2blRKNjIzZmNBSWJuYUM2TXlvbk9XajFHeFg5VlhNa3d6NGFTcGRHb2dXMGdxb1dTbFk3JTJCNSUyRnVhT0lEYTA0blBoMXVNekZucTY1TWNvaXQlMkZYVXM4OEttQnpyaVNjekRhZW9lbXBXNnNBWmJQZyUzRCUzRA",
+      "origin": "https://shopping.naver.com"
+    }
+  },
+  "validOrderDeliveryAddress": {
+    "query": "mutation validOrderDeliveryAddress($orderDeliveryAddressRequestInput: OrderDeliveryAddressRequestInput!) {\n  validOrderDeliveryAddress: validOrderDeliveryAddress(\n    orderDeliveryAddressRequestInput: $orderDeliveryAddressRequestInput\n  ) {\n    requestZipCode\n    validAddress\n    failMessage\n    failType\n    __typename\n  }\n}\n",
+    "variables": {
+      "orderDeliveryAddressRequestInput": {
+        "zipCode": "62029",
+        "baseAddress": "광주광역시 서구 염화로31번길 23 (화정동, 우미아파트)",
+        "roadNameYn": "true"
+      }
+    },
+    "headers": {
+      "x-schema-version": "2e428ba57ecffb44a16082caf2661aa409f0cd70e0fedd9bf945fc63ac02009c",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "referer": "https://shopping.naver.com/cart",
+      "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\"",
+      "sec-ch-ua-mobile": "?0",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+      "accept": "*/*",
+      "content-type": "application/json",
+      "request_session": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoYXNoS2V5IjoiYWE0NTQ5NzM2NDNkN2E0ZGY0MTc2NjU3OWQxZTUxNDNmNzBhOTBlNGM4ZDEzNWZkY2E5OTVmNGZmOTc4YzJhYyIsImlhdCI6MTc3MzI1MDg4NSwiZXhwIjoxNzczMzQwODg1fQ.-Nkiumjvsu6Tt_VvBpvclWoC2z4yUbvM-cxV4yVNn4Y",
+      "cookie": "NAC=EV1YBAxGaOXQ; NACT=1; NNB=BOWP5V7YUSYWS; SRT30=1773249784; nid_inf=1193125204; NID_AUT=XY7u/UYiY+EUiJqreqe0/7uTOKxev7tbgKuV15fOYeLrGy47HwiGDMzKlxCn8Fq0; NID_SES=AAABrOTFTXHWpcofispw1BTYjbgZNAP6u4vQNrERpoeFwufPzoqqYffL4//SIQ8PGJ7L19yzMej5cruBvLmrXOWVZ6yNUFq6jeeaOeZiEszCWMU6ekRUU8Te6TH0eIpjB4VacjaCgWm79O3LFR1cPXa/EZFX1Z9zmCodvkKRTXo38u3pB91VWFabY+TR3/vfl/LuaEMhD9IQJ/8sL4ElA3OgCy7v7G27B3F42wJLyjWnTzvmEA58m2QfbsGBzW6fnqHsJY6NsBRjVop51uVRUhRPm6hdZj/CL5sTSJI9T91WEEwD0Uyvp6/spQ1RKx7Y1zalXS4Tpzo5UAlSYIpFyV2zaA9JYT7dJ+Pn0V/pMPQTLU83Qlk+1FgiYExhjhZiB1SQ8nhAkmO9/xUEFuHuN85GorkKQsqmfYAKFxfakLLxeQDDQshYMHb8GM2sDCVDVWQhpzSjTx9dLnnJrz6mMrROqWvoJhCxpo4cVUV/Ph4+cbZefinTjsYSauwMJHX1UguNZi6YLKtq5A/lNJdsH5d/0oAp8zGZCtP6nrLO/TCSdZL4DQ6orEB6hgPYYQuQ+BE2pQ==; SRT5=1773250243; BUC=EsELwaIEwomK66hl65dt1tH7q9qADRj3WDzrwlGHB1w=; cto_bundle=j2s5jF9lYk44bWIyVUtIZW9yN1VGJTJCUzQ0cGt4ajBMZm5iN2l1N0RuWlR1OUQ2blRKNjIzZmNBSWJuYUM2TXlvbk9XajFHeFg5VlhNa3d6NGFTcGRHb2dXMGdxb1dTbFk3JTJCNSUyRnVhT0lEYTA0blBoMXVNekZucTY1TWNvaXQlMkZYVXM4OEttQnpyaVNjekRhZW9lbXBXNnNBWmJQZyUzRCUzRA",
+      "origin": "https://shopping.naver.com"
+    }
+  },
+  "calculateBenefitSummary": {
+    "query": "mutation calculateBenefitSummary($benefitSummaryCalculateRequestInput: BenefitSummaryCalculateRequestInput!) {\n  calculateBenefitSummary: calculateBenefitSummaryShopperGW(\n    benefitSummaryCalculateRequestInput: $benefitSummaryCalculateRequestInput\n  ) {\n    totalPriceList {\n      naverSellerNo\n      totalPrice {\n        cardPromotionPolicy {\n          fullText\n          policyUniqueId\n          __typename\n        }\n        cardPromotionDiscountAmount\n        myDiscountAmount\n        totalProductPrice\n        totalDeliveryFee\n        totalDiscountAmount\n        totalCouponDiscountAmount\n        totalImmediateDiscountAmount\n        totalOrderPrice\n        discountedTotalDeliveryFee\n        discountedTotalOrderPrice\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n",
+    "variables": {
+      "benefitSummaryCalculateRequestInput": {
+        "naverApp": false,
+        "shoppingApp": false,
+        "benefitSummarySourcesByNaverSellerNo": [
+          {
+            "accountNo": 101176025,
+            "naverSellerNo": 511185921,
+            "benefitSummarySources": [
+              {
+                "items": [
+                  {
+                    "itemNo": 40965585838,
+                    "contentNames": "주문수량1 = 0.5대 분량: 외발휠 지름55 (바퀴2개포함)",
+                    "quantity": 1,
+                    "type": "PRICING_OPTIONAL",
+                    "optionAdditionalFee": 2500,
+                    "purchasable": true
+                  }
+                ],
+                "channelServiceType": "STOREFARM",
+                "deliveryAttributeType": "TODAY",
+                "category1Id": "50000001",
+                "category2Id": "50000178",
+                "category3Id": "50005464",
+                "category4Id": null,
+                "cartProductId": "20260312-67e2ff38-1d68-11f1-bac6-a0369fff9068",
+                "productId": 8233828564,
+                "productNo": 8194559971,
+                "purchasable": true,
+                "purchasableItemExist": true,
+                "salePrice": 13900,
+                "totalPrice": 16400,
+                "totalPriceExcludingSupplement": 16400,
+                "totalQuantity": 1,
+                "pointAccumulationAvailable": true,
+                "benefitExcluded": false,
+                "channelProductSupplyType": "OWNER",
+                "benefitPolicy": {
+                  "sellerImmediateDiscountPolicy": {
+                    "sellerImmediateDiscountPolicyNo": "SE_8194559971",
+                    "sellerImmediateDiscountValue": 6000,
+                    "sellerImmediateDiscountValueUnit": "WON"
+                  },
+                  "specialDiscountPolicyList": [],
+                  "presentContent": null,
+                  "productId": 8233828564
+                },
+                "deliveryMethodType": "DELIVERY",
+                "selectedDeliveryFeePayType": "PREPAID",
+                "productDelivery": {
+                  "baseDeliveryFee": 3000,
+                  "deliveryFeePayType": "PREPAID",
+                  "deliveryFeeType": "PAID",
+                  "deliveryMethodTypes": [
+                    "DELIVERY"
+                  ],
+                  "freeBasisAmountCondition": null,
+                  "membershipFreeBasisAmountCondition": null,
+                  "repeatQuantity": null,
+                  "section2ExtendedDeliveryFee": 0,
+                  "section2Quantity": null,
+                  "section3ExtendedDeliveryFee": 0,
+                  "section3Quantity": null,
+                  "deliveryAttributeType": "TODAY"
+                },
+                "productDeliveryBundleGroup": {
+                  "area2ExtraFee": 4000,
+                  "area3ExtraFee": 4000,
+                  "bundleGroupId": "52815661",
+                  "deliveryAreaType": "AREA_3",
+                  "deliveryFeeChargeMethodType": "MIN"
+                }
+              },
+              {
+                "items": [
+                  {
+                    "itemNo": 37449535741,
+                    "contentNames": "옵션(주문수량1 = 바퀴2개): 2번 블랙",
+                    "quantity": 1,
+                    "type": "PRICING_OPTIONAL",
+                    "optionAdditionalFee": 5000,
+                    "purchasable": true
+                  }
+                ],
+                "channelServiceType": "STOREFARM",
+                "deliveryAttributeType": "TODAY",
+                "category1Id": "50000001",
+                "category2Id": "50000178",
+                "category3Id": "50005464",
+                "category4Id": null,
+                "cartProductId": "20260312-5fe47db0-1d68-11f1-83d7-507c6f2c798c",
+                "productId": 8221383521,
+                "productNo": 8182174290,
+                "purchasable": true,
+                "purchasableItemExist": true,
+                "salePrice": 18500,
+                "totalPrice": 23500,
+                "totalPriceExcludingSupplement": 23500,
+                "totalQuantity": 1,
+                "pointAccumulationAvailable": true,
+                "benefitExcluded": false,
+                "channelProductSupplyType": "OWNER",
+                "benefitPolicy": {
+                  "sellerImmediateDiscountPolicy": {
+                    "sellerImmediateDiscountPolicyNo": "SE_8182174290",
+                    "sellerImmediateDiscountValue": 8700,
+                    "sellerImmediateDiscountValueUnit": "WON"
+                  },
+                  "specialDiscountPolicyList": [],
+                  "presentContent": "호환용 십자나사 증정 (기존나사 보관필수)",
+                  "productId": 8221383521
+                },
+                "deliveryMethodType": "DELIVERY",
+                "selectedDeliveryFeePayType": "PREPAID",
+                "productDelivery": {
+                  "baseDeliveryFee": 2500,
+                  "deliveryFeePayType": "PREPAID",
+                  "deliveryFeeType": "PAID",
+                  "deliveryMethodTypes": [
+                    "DELIVERY"
+                  ],
+                  "freeBasisAmountCondition": null,
+                  "membershipFreeBasisAmountCondition": null,
+                  "repeatQuantity": null,
+                  "section2ExtendedDeliveryFee": 0,
+                  "section2Quantity": null,
+                  "section3ExtendedDeliveryFee": 0,
+                  "section3Quantity": null,
+                  "deliveryAttributeType": "TODAY"
+                },
+                "productDeliveryBundleGroup": {
+                  "area2ExtraFee": 4000,
+                  "area3ExtraFee": 4000,
+                  "bundleGroupId": "52815661",
+                  "deliveryAreaType": "AREA_3",
+                  "deliveryFeeChargeMethodType": "MIN"
+                }
+              }
+            ]
+          }
+        ],
+        "summaryCartType": "CART"
+      }
+    },
+    "headers": {
+      "x-schema-version": "2e428ba57ecffb44a16082caf2661aa409f0cd70e0fedd9bf945fc63ac02009c",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "referer": "https://shopping.naver.com/cart",
+      "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\"",
+      "sec-ch-ua-mobile": "?0",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+      "accept": "*/*",
+      "content-type": "application/json",
+      "request_session": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoYXNoS2V5IjoiYWE0NTQ5NzM2NDNkN2E0ZGY0MTc2NjU3OWQxZTUxNDNmNzBhOTBlNGM4ZDEzNWZkY2E5OTVmNGZmOTc4YzJhYyIsImlhdCI6MTc3MzI1MDg4NSwiZXhwIjoxNzczMzQwODg1fQ.-Nkiumjvsu6Tt_VvBpvclWoC2z4yUbvM-cxV4yVNn4Y",
+      "cookie": "NAC=EV1YBAxGaOXQ; NACT=1; NNB=BOWP5V7YUSYWS; SRT30=1773249784; nid_inf=1193125204; NID_AUT=XY7u/UYiY+EUiJqreqe0/7uTOKxev7tbgKuV15fOYeLrGy47HwiGDMzKlxCn8Fq0; NID_SES=AAABrOTFTXHWpcofispw1BTYjbgZNAP6u4vQNrERpoeFwufPzoqqYffL4//SIQ8PGJ7L19yzMej5cruBvLmrXOWVZ6yNUFq6jeeaOeZiEszCWMU6ekRUU8Te6TH0eIpjB4VacjaCgWm79O3LFR1cPXa/EZFX1Z9zmCodvkKRTXo38u3pB91VWFabY+TR3/vfl/LuaEMhD9IQJ/8sL4ElA3OgCy7v7G27B3F42wJLyjWnTzvmEA58m2QfbsGBzW6fnqHsJY6NsBRjVop51uVRUhRPm6hdZj/CL5sTSJI9T91WEEwD0Uyvp6/spQ1RKx7Y1zalXS4Tpzo5UAlSYIpFyV2zaA9JYT7dJ+Pn0V/pMPQTLU83Qlk+1FgiYExhjhZiB1SQ8nhAkmO9/xUEFuHuN85GorkKQsqmfYAKFxfakLLxeQDDQshYMHb8GM2sDCVDVWQhpzSjTx9dLnnJrz6mMrROqWvoJhCxpo4cVUV/Ph4+cbZefinTjsYSauwMJHX1UguNZi6YLKtq5A/lNJdsH5d/0oAp8zGZCtP6nrLO/TCSdZL4DQ6orEB6hgPYYQuQ+BE2pQ==; SRT5=1773250243; BUC=EsELwaIEwomK66hl65dt1tH7q9qADRj3WDzrwlGHB1w=; cto_bundle=j2s5jF9lYk44bWIyVUtIZW9yN1VGJTJCUzQ0cGt4ajBMZm5iN2l1N0RuWlR1OUQ2blRKNjIzZmNBSWJuYUM2TXlvbk9XajFHeFg5VlhNa3d6NGFTcGRHb2dXMGdxb1dTbFk3JTJCNSUyRnVhT0lEYTA0blBoMXVNekZucTY1TWNvaXQlMkZYVXM4OEttQnpyaVNjekRhZW9lbXBXNnNBWmJQZyUzRCUzRA",
+      "origin": "https://shopping.naver.com"
+    }
+  },
+  "getCardPromotions": {
+    "query": "mutation getCardPromotions($cardPromotionsRequestInput: CardPromotionsRequestInput!) {\n  getCardPromotions: getCardPromotions(\n    cardPromotionsRequestInput: $cardPromotionsRequestInput\n  ) {\n    maxDiscountValue\n    cardPromotions {\n      promotionSequence\n      promotionKind\n      promotionName\n      promotionCardCompanyName\n      cardType\n      cardOwnerType\n      promotionUnit\n      promotionValue\n      minPaymentAmount\n      maxPromotionAmount\n      promotionStartDateTime\n      promotionEndDateTime\n      overlapParticipation\n      maxOverlapCount\n      caution\n      applicableChannelProductNo\n      userParticipation\n      userParticipationText\n      maxBurdenComeAmount\n      applyObjectDisplayMessage\n      cardCompanyImageUrl\n      affiliateCard\n      cardProductCodes\n      cardProductName\n      cardProductGroupCode\n      __typename\n    }\n    __typename\n  }\n}\n",
+    "variables": {
+      "cardPromotionsRequestInput": {
+        "promotionRequests": [
+          {
+            "accountNo": 101176025,
+            "categoryIds": [
+              "50000001",
+              "50000178",
+              "50005464",
+              null
+            ],
+            "productNo": 8194559971
+          },
+          {
+            "accountNo": 101176025,
+            "categoryIds": [
+              "50000001",
+              "50000178",
+              "50005464",
+              null
+            ],
+            "productNo": 8182174290
+          }
+        ]
+      }
+    },
+    "headers": {
+      "x-schema-version": "2e428ba57ecffb44a16082caf2661aa409f0cd70e0fedd9bf945fc63ac02009c",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "referer": "https://shopping.naver.com/cart",
+      "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\"",
+      "sec-ch-ua-mobile": "?0",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+      "accept": "*/*",
+      "content-type": "application/json",
+      "request_session": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoYXNoS2V5IjoiYWE0NTQ5NzM2NDNkN2E0ZGY0MTc2NjU3OWQxZTUxNDNmNzBhOTBlNGM4ZDEzNWZkY2E5OTVmNGZmOTc4YzJhYyIsImlhdCI6MTc3MzI1MDg4NSwiZXhwIjoxNzczMzQwODg1fQ.-Nkiumjvsu6Tt_VvBpvclWoC2z4yUbvM-cxV4yVNn4Y",
+      "cookie": "NAC=EV1YBAxGaOXQ; NACT=1; NNB=BOWP5V7YUSYWS; SRT30=1773249784; nid_inf=1193125204; NID_AUT=XY7u/UYiY+EUiJqreqe0/7uTOKxev7tbgKuV15fOYeLrGy47HwiGDMzKlxCn8Fq0; NID_SES=AAABrOTFTXHWpcofispw1BTYjbgZNAP6u4vQNrERpoeFwufPzoqqYffL4//SIQ8PGJ7L19yzMej5cruBvLmrXOWVZ6yNUFq6jeeaOeZiEszCWMU6ekRUU8Te6TH0eIpjB4VacjaCgWm79O3LFR1cPXa/EZFX1Z9zmCodvkKRTXo38u3pB91VWFabY+TR3/vfl/LuaEMhD9IQJ/8sL4ElA3OgCy7v7G27B3F42wJLyjWnTzvmEA58m2QfbsGBzW6fnqHsJY6NsBRjVop51uVRUhRPm6hdZj/CL5sTSJI9T91WEEwD0Uyvp6/spQ1RKx7Y1zalXS4Tpzo5UAlSYIpFyV2zaA9JYT7dJ+Pn0V/pMPQTLU83Qlk+1FgiYExhjhZiB1SQ8nhAkmO9/xUEFuHuN85GorkKQsqmfYAKFxfakLLxeQDDQshYMHb8GM2sDCVDVWQhpzSjTx9dLnnJrz6mMrROqWvoJhCxpo4cVUV/Ph4+cbZefinTjsYSauwMJHX1UguNZi6YLKtq5A/lNJdsH5d/0oAp8zGZCtP6nrLO/TCSdZL4DQ6orEB6hgPYYQuQ+BE2pQ==; SRT5=1773250243; BUC=EsELwaIEwomK66hl65dt1tH7q9qADRj3WDzrwlGHB1w=; cto_bundle=j2s5jF9lYk44bWIyVUtIZW9yN1VGJTJCUzQ0cGt4ajBMZm5iN2l1N0RuWlR1OUQ2blRKNjIzZmNBSWJuYUM2TXlvbk9XajFHeFg5VlhNa3d6NGFTcGRHb2dXMGdxb1dTbFk3JTJCNSUyRnVhT0lEYTA0blBoMXVNekZucTY1TWNvaXQlMkZYVXM4OEttQnpyaVNjekRhZW9lbXBXNnNBWmJQZyUzRCUzRA",
+      "origin": "https://shopping.naver.com"
+    }
+  },
+  "getStoreCouponExist": {
+    "query": "query getStoreCouponExist($accountNo: BigInt!, $merchantNo: BigInt!) {\n  getStoreCouponExist: getStoreCouponExistShopperGW(\n    accountNo: $accountNo\n    merchantNo: $merchantNo\n  ) {\n    displayTooltip\n    issuableCouponExist\n    issuedCouponExist\n    purchaseHistoryMap\n    tooltipType\n    __typename\n  }\n}\n",
+    "variables": {
+      "accountNo": 101176025,
+      "merchantNo": 511185921
+    },
+    "headers": {
+      "x-schema-version": "2e428ba57ecffb44a16082caf2661aa409f0cd70e0fedd9bf945fc63ac02009c",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "referer": "https://shopping.naver.com/cart",
+      "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\"",
+      "sec-ch-ua-mobile": "?0",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+      "accept": "*/*",
+      "content-type": "application/json",
+      "request_session": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoYXNoS2V5IjoiYWE0NTQ5NzM2NDNkN2E0ZGY0MTc2NjU3OWQxZTUxNDNmNzBhOTBlNGM4ZDEzNWZkY2E5OTVmNGZmOTc4YzJhYyIsImlhdCI6MTc3MzI1MDg4NSwiZXhwIjoxNzczMzQwODg1fQ.-Nkiumjvsu6Tt_VvBpvclWoC2z4yUbvM-cxV4yVNn4Y",
+      "cookie": "NAC=EV1YBAxGaOXQ; NACT=1; NNB=BOWP5V7YUSYWS; SRT30=1773249784; nid_inf=1193125204; NID_AUT=XY7u/UYiY+EUiJqreqe0/7uTOKxev7tbgKuV15fOYeLrGy47HwiGDMzKlxCn8Fq0; NID_SES=AAABrOTFTXHWpcofispw1BTYjbgZNAP6u4vQNrERpoeFwufPzoqqYffL4//SIQ8PGJ7L19yzMej5cruBvLmrXOWVZ6yNUFq6jeeaOeZiEszCWMU6ekRUU8Te6TH0eIpjB4VacjaCgWm79O3LFR1cPXa/EZFX1Z9zmCodvkKRTXo38u3pB91VWFabY+TR3/vfl/LuaEMhD9IQJ/8sL4ElA3OgCy7v7G27B3F42wJLyjWnTzvmEA58m2QfbsGBzW6fnqHsJY6NsBRjVop51uVRUhRPm6hdZj/CL5sTSJI9T91WEEwD0Uyvp6/spQ1RKx7Y1zalXS4Tpzo5UAlSYIpFyV2zaA9JYT7dJ+Pn0V/pMPQTLU83Qlk+1FgiYExhjhZiB1SQ8nhAkmO9/xUEFuHuN85GorkKQsqmfYAKFxfakLLxeQDDQshYMHb8GM2sDCVDVWQhpzSjTx9dLnnJrz6mMrROqWvoJhCxpo4cVUV/Ph4+cbZefinTjsYSauwMJHX1UguNZi6YLKtq5A/lNJdsH5d/0oAp8zGZCtP6nrLO/TCSdZL4DQ6orEB6hgPYYQuQ+BE2pQ==; SRT5=1773250243; BUC=EsELwaIEwomK66hl65dt1tH7q9qADRj3WDzrwlGHB1w=; cto_bundle=j2s5jF9lYk44bWIyVUtIZW9yN1VGJTJCUzQ0cGt4ajBMZm5iN2l1N0RuWlR1OUQ2blRKNjIzZmNBSWJuYUM2TXlvbk9XajFHeFg5VlhNa3d6NGFTcGRHb2dXMGdxb1dTbFk3JTJCNSUyRnVhT0lEYTA0blBoMXVNekZucTY1TWNvaXQlMkZYVXM4OEttQnpyaVNjekRhZW9lbXBXNnNBWmJQZyUzRCUzRA",
+      "origin": "https://shopping.naver.com"
+    }
+  }
+}

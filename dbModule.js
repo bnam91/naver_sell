@@ -1,4 +1,4 @@
-const { syncOptionToSheet, upsertStoreToSheet, upsertProductToSheet } = require('./sheetsModule');
+const { syncOptionToSheet, upsertStoreToSheet, upsertProductToSheet, batchUpsertToSheet, markDeletedOptions } = require('./sheetsModule');
 
 // 세션 타임스탬프 (코드 실행 시작 시간으로 통일)
 let currentSessionTimestamp = null;
@@ -157,9 +157,57 @@ async function updateStock(storeId, productId, optionName, stock, storeName = nu
 
 /**
  * 세션 타임스탬프 설정 (코드 실행 시작 시간으로 통일, 한국 시간 형식)
+ * @returns {string} 설정된 타임스탬프
  */
 function setSessionTimestamp(timestamp = null) {
     currentSessionTimestamp = timestamp || toKoreaTime();
+    return currentSessionTimestamp;
+}
+
+/**
+ * 여러 옵션을 시트에 한 번에 배치 기록
+ * @param {Array} items - [{storeId, storeName, productId, productName, optionName, stock, price, additionalPrice}]
+ * @param {string} timestamp - 공통 타임스탬프
+ */
+async function batchUpdateStocks(items, timestamp) {
+    try {
+        if (!items || items.length === 0) return;
+
+        const ts = timestamp || currentSessionTimestamp || toKoreaTime();
+
+        // 시트에서 이전 재고 읽기 (1번만)
+        const { readAllStockFromSheet } = require('./sheetsModule');
+        const previousStockMap = await readAllStockFromSheet(ts);
+
+        // 증감량 계산 후 배치 데이터 구성
+        const batchItems = items.map(item => {
+            const key = `${item.storeId}__${item.productId}__${item.optionName}`;
+            const prevStock = previousStockMap[key] ?? null;
+
+            let stockChange = '(-)';
+            if (prevStock !== null) {
+                const diff = item.stock - prevStock;
+                if (diff > 0) stockChange = `(+${diff})`;
+                else if (diff < 0) stockChange = `(-${Math.abs(diff)})`;
+            }
+
+            return {
+                ...item,
+                stockValue: `${item.stock} ${stockChange}`,
+                timestamp: ts
+            };
+        });
+
+        await batchUpsertToSheet(batchItems);
+
+        // 고아행 처리: 이번 실행에서 업데이트 안 된 행에 DELETED 표기
+        const storeIds = new Set(batchItems.map(i => String(i.storeId)));
+        const updatedKeys = new Set(batchItems.map(i => `${i.storeId}__${i.productId}__${i.optionName}`));
+        await markDeletedOptions(storeIds, updatedKeys, ts);
+    } catch (e) {
+        console.error(`배치 재고 저장 중 오류: ${e.message}`);
+        throw e;
+    }
 }
 
 /**
@@ -175,6 +223,7 @@ module.exports = {
     addOption,
     addOrderModificationInfo,
     updateStock,
+    batchUpdateStocks,
     setSessionTimestamp,
     clearSessionTimestamp
 };

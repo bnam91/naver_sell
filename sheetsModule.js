@@ -20,15 +20,16 @@ const SPREADSHEET_ID = '1rd5hkf7oMm8IVgGbISm6ZjHshZ74VmHor9I0VXVWNiM';
 const SHEET_NAME = 'daily_stock_';
 
 // 컬럼 인덱스 (0부터 시작)
-const COL_INDEX = 0;      // A열
-const COL_STORE_ID = 1;    // B열
-const COL_PRODUCT_ID = 2;  // C열
-const COL_STORE_NAME = 4;  // E열
-const COL_PRODUCT_NAME = 5; // F열
-const COL_PRICE = 6;       // G열
-const COL_OPTION_NAME = 7;  // H열
-const COL_ADDITIONAL_PRICE = 8; // I열
-const COL_STOCK_START = 11; // L열 (인덱스 11)
+const COL_INDEX = 0;           // A열
+// B열: 빈 칼럼 (gg_id 등 기존 데이터 유지용)
+const COL_STORE_ID = 2;        // C열
+const COL_PRODUCT_ID = 3;      // D열
+const COL_STORE_NAME = 5;      // F열
+const COL_PRODUCT_NAME = 6;    // G열
+const COL_PRICE = 7;           // H열
+const COL_OPTION_NAME = 8;     // I열
+const COL_ADDITIONAL_PRICE = 9; // J열
+const COL_STOCK_START = 11;    // L열 (인덱스 11)
 
 let sheets = null;
 let authClient = null;
@@ -221,8 +222,8 @@ async function ensureHeaders() {
         // 헤더가 없거나 비어있으면 헤더 추가
         if (data.length === 0 || !data[0] || data[0].length === 0) {
             const headers = [
-                '인덱스', 'store_id', 'product_id', '', 'store_name', 
-                'product_name', 'price', 'option_name', 'additional_price', '', '', ''
+                '', '', 'store_id', 'product_id', '', 'store_name',
+                'product_name', 'price', 'option_name', 'additional_price', '', ''
             ];
             
             await retryWithBackoff(async () => {
@@ -582,7 +583,7 @@ async function upsertToSheet(storeId, storeName, productId, productName, price, 
             const maxCol = Math.max(...Object.values(timestampToCol), COL_STOCK_START);
             const newRow = new Array(Math.max(maxCol + 1, COL_STOCK_START + 1)).fill('');
             
-            newRow[COL_INDEX] = data.length - 1; // 인덱스 (헤더 제외, 0부터 시작)
+            newRow[COL_INDEX] = ''; // A열 비움
             newRow[COL_STORE_ID] = String(storeId);
             newRow[COL_PRODUCT_ID] = String(productId);
             newRow[COL_STORE_NAME] = String(storeName || '');
@@ -991,11 +992,305 @@ async function syncOptionToSheet(storeId, storeName, productId, productName, pri
     );
 }
 
+/**
+ * 전체 시트에서 최근 재고 값을 한 번에 읽어 map으로 반환
+ * key: "storeId__productId__optionName", value: 숫자 재고
+ * @param {string} currentTimestamp - 현재 타임스탬프 (15분 이내 열 판별용)
+ */
+async function readAllStockFromSheet(currentTimestamp = null) {
+    try {
+        const data = await readSheetData();
+        if (data.length < 2) return {};
+
+        const headerRow = data[0] || [];
+        const result = {};
+
+        // L열 이후 타임스탬프 목록 수집 (내림차순 정렬)
+        const timestampCols = [];
+        for (let col = COL_STOCK_START; col < headerRow.length; col++) {
+            if (headerRow[col]) timestampCols.push({ col, ts: headerRow[col] });
+        }
+        timestampCols.sort((a, b) => parseKoreaTime(b.ts) - parseKoreaTime(a.ts));
+
+        if (timestampCols.length === 0) return {};
+
+        // 현재 타임스탬프 기준 이전 열 결정
+        let prevCol = null;
+        if (currentTimestamp && timestampCols.length > 0) {
+            const latest = timestampCols[0];
+            const diff = getTimeDifferenceInMinutes(latest.ts, currentTimestamp);
+            // 15분 이내면 그 열이 덮어씌워질 예정이므로 두 번째 열이 이전 기준
+            if (diff <= 15 && timestampCols.length > 1) {
+                prevCol = timestampCols[1].col;
+            } else {
+                prevCol = timestampCols[0].col;
+            }
+        } else if (timestampCols.length > 0) {
+            prevCol = timestampCols[0].col;
+        }
+
+        if (prevCol === null) return {};
+
+        for (let row = 1; row < data.length; row++) {
+            const r = data[row];
+            if (!r) continue;
+            const storeId = r[COL_STORE_ID] || '';
+            const productId = r[COL_PRODUCT_ID] || '';
+            const optionName = r[COL_OPTION_NAME] || '';
+            const stockStr = r[prevCol] || '';
+            const match = stockStr.toString().match(/^(\d+)/);
+            if (match) {
+                const key = `${storeId}__${productId}__${optionName}`;
+                result[key] = parseInt(match[1], 10);
+            }
+        }
+
+        return result;
+    } catch (e) {
+        console.error(`전체 재고 읽기 중 오류: ${e.message}`);
+        return {};
+    }
+}
+
+/**
+ * 여러 옵션을 시트에 한 번에 배치 기록
+ * @param {Array} items - [{storeId, storeName, productId, productName, optionName, additionalPrice, price, stockValue, timestamp}]
+ */
+async function batchUpsertToSheet(items) {
+    if (!items || items.length === 0) return;
+
+    try {
+        const sheetsClient = await initSheets();
+        await ensureHeaders();
+
+        const data = await readSheetData();
+        const headerRow = data[0] || [];
+        const timestamp = items[0].timestamp;
+
+        // 타겟 열 결정 (1번만)
+        let targetCol = null;
+        let lastTimestamp = null;
+        for (let i = COL_STOCK_START; i < headerRow.length; i++) {
+            if (headerRow[i]) { targetCol = i; lastTimestamp = headerRow[i]; }
+        }
+
+        let reuseColumn = false;
+        if (lastTimestamp) {
+            const diff = getTimeDifferenceInMinutes(lastTimestamp, timestamp);
+            if (diff <= 15) { reuseColumn = true; }
+        }
+
+        if (!reuseColumn) {
+            // 새 열: 빈 열 찾기
+            let nextCol = COL_STOCK_START;
+            while (nextCol < headerRow.length && headerRow[nextCol]) nextCol++;
+            targetCol = nextCol;
+            // 열 확장 여부 확인
+            await ensureSheetColumns(sheetsClient, targetCol + 1);
+        }
+
+        const colLetter = numberToColumnLetter(targetCol);
+        const valueUpdates = [];
+        const formatRequests = [];
+        const sheetId = await getSheetId(sheetsClient);
+        const newRows = [];
+
+        // 헤더에 타임스탬프 기록 (새 열인 경우)
+        if (!reuseColumn) {
+            valueUpdates.push({
+                range: `${SHEET_NAME}!${colLetter}1`,
+                values: [[timestamp]]
+            });
+        }
+
+        for (const item of items) {
+            const { storeId, storeName, productId, productName, optionName, additionalPrice, price, stockValue } = item;
+            let rowIndex = findRowIndex(data, storeId, productId, optionName);
+
+            if (rowIndex === -1) {
+                // 새 행 준비
+                const newRow = new Array(targetCol + 1).fill('');
+                newRow[COL_INDEX] = ''; // A열 비움
+                newRow[COL_STORE_ID] = String(storeId);
+                newRow[COL_PRODUCT_ID] = String(productId);
+                newRow[COL_STORE_NAME] = String(storeName || '');
+                newRow[COL_PRODUCT_NAME] = String(productName || '');
+                newRow[COL_PRICE] = price !== null ? String(price) : '';
+                newRow[COL_OPTION_NAME] = String(optionName || '');
+                newRow[COL_ADDITIONAL_PRICE] = additionalPrice !== null ? String(additionalPrice) : '';
+                newRow[targetCol] = String(stockValue);
+                newRows.push(newRow);
+
+                const appendedRow = data.length + newRows.length - 1;
+                const color = getColorFromStockValue(stockValue);
+                if (color) {
+                    formatRequests.push({ repeatCell: { range: { sheetId, startRowIndex: appendedRow, endRowIndex: appendedRow + 1, startColumnIndex: targetCol, endColumnIndex: targetCol + 1 }, cell: { userEnteredFormat: { textFormat: { foregroundColor: color } } }, fields: 'userEnteredFormat.textFormat.foregroundColor' } });
+                }
+            } else {
+                // 기존 행 업데이트
+                valueUpdates.push({ range: `${SHEET_NAME}!${colLetter}${rowIndex + 1}`, values: [[String(stockValue)]] });
+                if (storeName) valueUpdates.push({ range: `${SHEET_NAME}!${numberToColumnLetter(COL_STORE_NAME)}${rowIndex + 1}`, values: [[String(storeName)]] });
+                if (productName) valueUpdates.push({ range: `${SHEET_NAME}!${numberToColumnLetter(COL_PRODUCT_NAME)}${rowIndex + 1}`, values: [[String(productName)]] });
+                if (price !== null) valueUpdates.push({ range: `${SHEET_NAME}!${numberToColumnLetter(COL_PRICE)}${rowIndex + 1}`, values: [[String(price)]] });
+
+                const color = getColorFromStockValue(stockValue);
+                if (color) {
+                    formatRequests.push({ repeatCell: { range: { sheetId, startRowIndex: rowIndex, endRowIndex: rowIndex + 1, startColumnIndex: targetCol, endColumnIndex: targetCol + 1 }, cell: { userEnteredFormat: { textFormat: { foregroundColor: color } } }, fields: 'userEnteredFormat.textFormat.foregroundColor' } });
+                }
+            }
+        }
+
+        // 새 행 일괄 append
+        if (newRows.length > 0) {
+            await retryWithBackoff(async () => {
+                return await sheetsClient.spreadsheets.values.append({
+                    spreadsheetId: SPREADSHEET_ID,
+                    range: `${SHEET_NAME}!A:ZZ`,
+                    valueInputOption: 'RAW',
+                    insertDataOption: 'INSERT_ROWS',
+                    resource: { values: newRows }
+                });
+            }, '새 행 배치 추가');
+        }
+
+        // 기존 행 값 일괄 업데이트
+        if (valueUpdates.length > 0) {
+            await retryWithBackoff(async () => {
+                return await sheetsClient.spreadsheets.values.batchUpdate({
+                    spreadsheetId: SPREADSHEET_ID,
+                    resource: { valueInputOption: 'RAW', data: valueUpdates }
+                });
+            }, '값 배치 업데이트');
+        }
+
+        // 색상 서식 일괄 적용
+        if (formatRequests.length > 0) {
+            await retryWithBackoff(async () => {
+                return await sheetsClient.spreadsheets.batchUpdate({
+                    spreadsheetId: SPREADSHEET_ID,
+                    resource: { requests: formatRequests }
+                });
+            }, '색상 배치 적용');
+        }
+
+        console.log(`[배치 완료] ${colLetter}열에 ${items.length}개 기록 (${reuseColumn ? '열 재사용' : '새 열'})`);
+    } catch (e) {
+        console.error(`배치 시트 기록 중 오류: ${e.message}`);
+        throw e;
+    }
+}
+
+const ORPHAN_LOG_SHEET = 'orphan_log';
+const ORPHAN_LOG_HEADERS = ['발견일시', 'storeId', 'storeName', 'productId', 'productName', 'optionName', '메모'];
+
+/**
+ * orphan_log 시트가 없으면 생성하고 헤더 기록
+ */
+async function ensureOrphanLogSheet(sheetsClient) {
+    const response = await retryWithBackoff(async () => {
+        return await sheetsClient.spreadsheets.get({ spreadsheetId: SPREADSHEET_ID });
+    }, 'orphan_log 시트 확인');
+
+    const exists = response.data.sheets.some(s => s.properties.title === ORPHAN_LOG_SHEET);
+    if (exists) return;
+
+    // 시트 생성
+    await retryWithBackoff(async () => {
+        return await sheetsClient.spreadsheets.batchUpdate({
+            spreadsheetId: SPREADSHEET_ID,
+            resource: { requests: [{ addSheet: { properties: { title: ORPHAN_LOG_SHEET } } }] }
+        });
+    }, 'orphan_log 시트 생성');
+
+    // 헤더 + 안내 메모 기록
+    await retryWithBackoff(async () => {
+        return await sheetsClient.spreadsheets.values.batchUpdate({
+            spreadsheetId: SPREADSHEET_ID,
+            resource: {
+                valueInputOption: 'RAW',
+                data: [
+                    { range: `${ORPHAN_LOG_SHEET}!A1:G1`, values: [ORPHAN_LOG_HEADERS] },
+                    { range: `${ORPHAN_LOG_SHEET}!I1`, values: [['⚠️ daily_stock_ 시트 정리 필요: 아래 기록된 옵션 행은 더 이상 존재하지 않는 고아행입니다. daily_stock_ 시트에서 해당 행을 삭제해주세요.']] }
+                ]
+            }
+        });
+    }, 'orphan_log 헤더 기록');
+
+    console.log('[고아행] orphan_log 시트 생성 완료');
+}
+
+/**
+ * 이번 실행에서 업데이트 안 된 행을 orphan_log 시트에 로그 기록
+ * @param {Set<string>} storeIds - 이번 실행에서 처리한 storeId 집합
+ * @param {Set<string>} updatedKeys - 업데이트된 "storeId__productId__optionName" 집합
+ * @param {string} timestamp - 현재 타임스탬프
+ */
+async function markDeletedOptions(storeIds, updatedKeys, timestamp) {
+    if (!storeIds || storeIds.size === 0) return;
+
+    try {
+        const sheetsClient = await initSheets();
+        const data = await readSheetData();
+        if (data.length < 2) return;
+
+        const orphanRows = [];
+
+        for (let row = 1; row < data.length; row++) {
+            const r = data[row];
+            if (!r) continue;
+            const storeId = r[COL_STORE_ID] || '';
+            if (!storeIds.has(storeId)) continue;
+
+            const productId = r[COL_PRODUCT_ID] || '';
+            const optionName = r[COL_OPTION_NAME] || '';
+            const key = `${storeId}__${productId}__${optionName}`;
+
+            if (!updatedKeys.has(key)) {
+                const storeName = r[COL_STORE_NAME] || '';
+                const productName = r[COL_PRODUCT_NAME] || '';
+                orphanRows.push([
+                    timestamp,
+                    storeId,
+                    storeName,
+                    productId,
+                    productName,
+                    optionName,
+                    `daily_stock_ ${row + 1}행 정리 필요`
+                ]);
+            }
+        }
+
+        if (orphanRows.length === 0) {
+            console.log('[고아행] 해당 없음');
+            return;
+        }
+
+        await ensureOrphanLogSheet(sheetsClient);
+
+        await retryWithBackoff(async () => {
+            return await sheetsClient.spreadsheets.values.append({
+                spreadsheetId: SPREADSHEET_ID,
+                range: `${ORPHAN_LOG_SHEET}!A:G`,
+                valueInputOption: 'RAW',
+                insertDataOption: 'INSERT_ROWS',
+                resource: { values: orphanRows }
+            });
+        }, 'orphan_log 기록');
+
+        console.log(`[고아행] ${orphanRows.length}개 행을 orphan_log에 기록 완료`);
+    } catch (e) {
+        console.error(`고아행 로그 기록 중 오류: ${e.message}`);
+    }
+}
+
 module.exports = {
     upsertToSheet,
     syncOptionToSheet,
     upsertStoreToSheet,
     upsertProductToSheet,
     readStockFromSheet,
+    readAllStockFromSheet,
+    batchUpsertToSheet,
+    markDeletedOptions,
     initSheets
 };

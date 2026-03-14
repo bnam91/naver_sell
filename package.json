@@ -18,5 +18,8 @@
     "googleapis": "^166.0.0",
     "open": "^11.0.0",
     "selenium-webdriver": "^4.15.0"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^24.39.0"
   }
 }

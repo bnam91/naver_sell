@@ -10,12 +10,37 @@ const { execSync, spawn } = require('child_process');
 const { batchUpdateStocks, setSessionTimestamp, clearSessionTimestamp } = require('./dbModule');
 
 const GRAPHQL_URL = 'https://shopping.naver.com/cart/graphql';
-const CHROME_PATH = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const CDP_PORT = 9222;
+const IS_WIN = process.platform === 'win32';
+
+// OS별 Chrome 실행 경로
+function getChromePath() {
+    if (!IS_WIN) return '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+    const candidates = [
+        'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+        'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+        path.join(process.env.LOCALAPPDATA || '', 'Google\\Chrome\\Application\\chrome.exe'),
+    ];
+    for (const p of candidates) {
+        if (fs.existsSync(p)) return p;
+    }
+    return candidates[0]; // 기본값
+}
+const CHROME_PATH = getChromePath();
+
+// OS별 Chrome 종료 명령어
+const CHROME_KILL_CMD = IS_WIN
+    ? 'taskkill /F /IM chrome.exe'
+    : 'pkill -a "Google Chrome"';
+
+// OS별 기본 user_data 루트
+const USER_DATA_ROOT = IS_WIN
+    ? path.join(process.env.USERPROFILE || 'C:\\Users\\user', 'Documents', 'github_cloud', 'user_data')
+    : path.join('/Users/a1/Documents/github_cloud/user_data');
 
 // 프로필명 → CDP용 Chrome 프로필 경로 매핑
 const CDP_PROFILE_MAP = {
-    naver_bnam91: '/Users/a1/Documents/github_cloud/user_data/naver_bnam91_cdp',
+    naver_bnam91: path.join(USER_DATA_ROOT, 'naver_bnam91_cdp'),
 };
 
 // 브라우저에서 캡처한 실제 쿼리 로드 (갱신 후 재로드 가능하도록 함수로)
@@ -35,7 +60,7 @@ async function refreshSession(profile) {
     console.log(`\n[${profile}] 세션 만료 감지 → Chrome CDP로 자동 갱신 시작...`);
 
     // 기존 Chrome 종료
-    try { execSync('pkill -a "Google Chrome"', { stdio: 'ignore' }); } catch(e) {}
+    try { execSync(CHROME_KILL_CMD, { stdio: 'ignore' }); } catch(e) {}
     await new Promise(r => setTimeout(r, 2000));
 
     // Chrome CDP 실행

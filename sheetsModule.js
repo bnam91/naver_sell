@@ -2,9 +2,8 @@ const { google } = require('googleapis');
 const path = require('path');
 const dotenv = require('dotenv');
 
-// .env 파일 경로 설정 (api_key 디렉토리)
-const apiKeyDir = path.join(__dirname, '..', 'api_key');
-const envPath = path.join(apiKeyDir, '.env');
+// .env 파일 경로 설정
+const envPath = path.join(process.env.USERPROFILE, 'Documents', 'github_cloud', 'module_api_key', '.env');
 
 // .env 파일을 먼저 로드 (auth.js가 dotenv.config()를 호출하기 전에)
 dotenv.config({ path: envPath });
@@ -12,7 +11,7 @@ dotenv.config({ path: envPath });
 dotenv.config();
 
 // auth.js 경로
-const authPath = path.join(apiKeyDir, 'auth.js');
+const authPath = path.join(process.env.USERPROFILE, 'Documents', 'github_cloud', 'module_auth', 'auth.js');
 const { getCredentials } = require(authPath);
 
 // 스프레드시트 ID (URL에서 추출)
